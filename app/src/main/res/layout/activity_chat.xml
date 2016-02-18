@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#969696">
+
+
+    <RelativeLayout
+        android:id="@+id/id_top"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_alignParentTop="true"
+        android:background="#333399">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Lenovo"
+            android:textColor="#FFF"
+            android:textSize="22sp" />
+
+        <ImageView
+            android:id="@+id/back_about"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="95dp"
+            android:layout_toLeftOf="@id/textView"
+            android:src="@mipmap/icon_back" />
+
+        <ImageView
+            android:id="@+id/iv_man"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="85dp"
+            android:layout_toRightOf="@id/textView"
+            android:src="@mipmap/icon_man" />
+    </RelativeLayout>
+
+
+    <ListView
+        android:id="@+id/lv_chat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/id_top"
+        android:cacheColorHint="#0000"
+        android:divider="@null"
+        android:dividerHeight="5dp"
+        android:scrollbarStyle="outsideOverlay"
+        android:stackFromBottom="true"></ListView>
+
+
+    <RelativeLayout
+        android:id="@+id/id_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:background="#333399">
+
+        <ImageView
+            android:id="@+id/iv_expression"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="15dp"
+            android:src="@mipmap/icon_expression" />
+
+        <EditText
+            android:id="@+id/et_chat"
+            android:layout_width="170dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/shape"
+            android:gravity="center"
+            android:textColor="#404040" />
+
+        <Button
+            android:id="@+id/btn_sendMsg"
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/shape_chat"
+            android:text="发送"
+            android:textColor="#404040"
+            android:textSize="18sp" />
+    </RelativeLayout>
+</RelativeLayout>
