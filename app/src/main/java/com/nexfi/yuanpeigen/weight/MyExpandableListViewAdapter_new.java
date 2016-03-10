@@ -5,16 +5,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.TextView;
 
+import com.nexfi.yuanpeigen.bean.ChatUser;
 import com.nexfi.yuanpeigen.nexfi.R;
+
+import java.util.List;
 
 /**
  * Created by Mark on 2016/2/3.
  */
 public class MyExpandableListViewAdapter_new extends BaseExpandableListAdapter {
     private LayoutInflater inflater;
+    private List<ChatUser> userinfos;
 
-    public MyExpandableListViewAdapter_new(Context context) {
+    public MyExpandableListViewAdapter_new(Context context, List<ChatUser> userinfos) {
+        this.userinfos = userinfos;
         inflater = LayoutInflater.from(context);
     }
 
@@ -25,17 +31,17 @@ public class MyExpandableListViewAdapter_new extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 5;
+        return userinfos.size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return null;
+        return groupPosition;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return null;
+        return childPosition;
     }
 
     @Override
@@ -61,12 +67,28 @@ public class MyExpandableListViewAdapter_new extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        View v = inflater.inflate(R.layout.new_child, null);
-        return v;
+        final ChatUser entity = userinfos.get(childPosition);
+        ViewHolder holder = null;
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.new_child, null);
+            holder = new ViewHolder();
+            holder.tv_username = (TextView) convertView.findViewById(R.id.tv_username_new);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        holder.tv_username.setText(entity.nick);
+        return convertView;
+    }
+
+    static class ViewHolder {
+        public TextView tv_username;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        return true;
     }
+
+
 }

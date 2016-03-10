@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#969696"
+    android:background="#FFFFFF"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -13,8 +13,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:background="#333399"
+            android:layout_height="70dp"
+            android:background="@mipmap/icon_title"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -26,54 +26,45 @@
                 android:textSize="22sp" />
         </LinearLayout>
 
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#33cc66"
-                android:gravity="center"
-                android:text="已连接过的设备"
-                android:textSize="22sp" />
-        </LinearLayout>
+                android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+                <ExpandableListView
+                    android:id="@+id/ex_online"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:childDivider="@color/expandableItem" />
+            </LinearLayout>
 
-            <ExpandableListView
-                android:id="@+id/ex_online"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:childDivider="@color/colorLine"></ExpandableListView>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp">
 
-        </LinearLayout>
+                <ExpandableListView
+                    android:id="@+id/ex_offline"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:childDivider="@color/expandableItem" />
+            </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp">
-
-            <ExpandableListView
-                android:id="@+id/ex_offline"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:childDivider="@color/colorLine"></ExpandableListView>
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp">
-
-            <ExpandableListView
-                android:id="@+id/ex_new"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:childDivider="@color/colorLine"></ExpandableListView>
+                <ExpandableListView
+                    android:id="@+id/ex_new"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:childDivider="@color/expandableItem" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

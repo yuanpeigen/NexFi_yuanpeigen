@@ -13,8 +13,11 @@ import com.nexfi.yuanpeigen.nexfi.R;
  */
 public class MyExpandableListViewAdapter_online extends BaseExpandableListAdapter {
     private LayoutInflater inflater;
-    public  MyExpandableListViewAdapter_online(Context context){
-        inflater = LayoutInflater.from(context);}
+
+    public MyExpandableListViewAdapter_online(Context context) {
+        inflater = LayoutInflater.from(context);
+    }
+
     @Override
     public int getGroupCount() {
         return 1;
@@ -22,7 +25,7 @@ public class MyExpandableListViewAdapter_online extends BaseExpandableListAdapte
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 5;
+        return 9;
     }
 
     @Override
@@ -52,18 +55,18 @@ public class MyExpandableListViewAdapter_online extends BaseExpandableListAdapte
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        View v =inflater.inflate(R.layout.online_group,null);
+        View v = inflater.inflate(R.layout.online_group, null);
         return v;
     }
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        View v =inflater.inflate(R.layout.online_child,null);
+        View v = inflater.inflate(R.layout.online_child, null);
         return v;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        return true;
     }
 }

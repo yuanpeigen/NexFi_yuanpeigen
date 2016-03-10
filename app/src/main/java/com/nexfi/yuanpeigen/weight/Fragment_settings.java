@@ -6,9 +6,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.nexfi.yuanpeigen.activity.AboutActivity;
+import com.nexfi.yuanpeigen.activity.UserinfoActivity;
 import com.nexfi.yuanpeigen.nexfi.R;
 
 /**
@@ -16,9 +17,8 @@ import com.nexfi.yuanpeigen.nexfi.R;
  */
 public class Fragment_settings extends Fragment implements View.OnClickListener {
 
-    private LinearLayout modify_username, about;
+    private RelativeLayout modify_userinfo, about;
     private View view;
-    private DialogFragment_ModifyUsername dialog;
 
 
     @Override
@@ -34,9 +34,9 @@ public class Fragment_settings extends Fragment implements View.OnClickListener 
     }
 
     private void initView() {
-        modify_username = (LinearLayout) view.findViewById(R.id.modify_username);
-        about = (LinearLayout) view.findViewById(R.id.about);
-        modify_username.setOnClickListener(this);
+        modify_userinfo = (RelativeLayout) view.findViewById(R.id.modify_userInfo);
+        about = (RelativeLayout) view.findViewById(R.id.about);
+        modify_userinfo.setOnClickListener(this);
         about.setOnClickListener(this);
     }
 
@@ -46,10 +46,13 @@ public class Fragment_settings extends Fragment implements View.OnClickListener 
         switch (v.getId()) {
             case R.id.about:
                 startActivity(new Intent(getActivity(), AboutActivity.class));
+                getActivity().finish();
                 break;
-            case R.id.modify_username:
-                dialog = new DialogFragment_ModifyUsername();
-                dialog.show(getFragmentManager(), "dialog");
+            case R.id.modify_userInfo:
+                Intent intent = new Intent(getActivity(), UserinfoActivity.class);
+                intent.putExtra("userSex", true);
+                startActivity(intent);
+                getActivity().finish();
                 break;
         }
     }

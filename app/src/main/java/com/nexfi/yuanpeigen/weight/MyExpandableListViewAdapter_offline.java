@@ -22,7 +22,7 @@ public class MyExpandableListViewAdapter_offline extends BaseExpandableListAdapt
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 6;
+        return 9;
     }
 
     @Override
@@ -64,6 +64,6 @@ public class MyExpandableListViewAdapter_offline extends BaseExpandableListAdapt
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        return true;
     }
 }

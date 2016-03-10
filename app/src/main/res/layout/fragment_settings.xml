@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#969696"
+    android:background="#FFFFFF"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:background="#333399">
+        android:layout_height="70dp"
+        android:background="@mipmap/icon_title">
 
         <TextView
             android:id="@+id/textView"
@@ -21,49 +21,88 @@
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/modify_username"
+
+    <RelativeLayout
+        android:id="@+id/modify_userInfo"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        android:background="#FFF"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:background="#FFF">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="30dp"
+            android:src="@mipmap/icon_modify_name" />
 
         <TextView
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:text="修改昵称"
-            android:textColor="#262626"
-            android:textSize="20sp" />
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/image"
+            android:text="个人信息"
+            android:textColor="#787878"
+            android:textSize="17sp" />
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="160dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="30dp"
             android:src="@mipmap/icon_in" />
-    </LinearLayout>
+    </RelativeLayout>
 
-    <LinearLayout
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="26dp"
+        android:background="@color/expandableItem" />
+
+    <RelativeLayout
         android:id="@+id/about"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        android:layout_marginTop="0.5dp"
-        android:background="#FFF"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:background="#FFF">
+
+        <ImageView
+            android:id="@+id/image2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="30dp"
+            android:src="@mipmap/icon_about" />
 
         <TextView
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/image2"
             android:text="关 于"
-            android:textColor="#262626"
-            android:textSize="20sp" />
+            android:textColor="#787878"
+            android:textSize="17sp" />
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="160dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="30dp"
             android:src="@mipmap/icon_in" />
-    </LinearLayout>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="26dp"
+        android:background="@color/expandableItem" />
+
+
 </LinearLayout>

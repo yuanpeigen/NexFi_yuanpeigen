@@ -3,13 +3,14 @@ package com.nexfi.yuanpeigen.activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.nexfi.yuanpeigen.nexfi.R;
 
@@ -18,10 +19,10 @@ import com.nexfi.yuanpeigen.nexfi.R;
  */
 public class AboutActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private ImageView iv;
+    private RelativeLayout back_about;
     private LinearLayout update;
     private Dialog mDialog;
-    private Button mButton;
+    private Button mButton_ensure, mButton_cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +32,10 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void initView() {
-        iv = (ImageView) findViewById(R.id.back_about);
+        back_about = (RelativeLayout) findViewById(R.id.back_about);
         update = (LinearLayout) findViewById(R.id.update);
         update.setOnClickListener(this);
-        iv.setOnClickListener(this);
+        back_about.setOnClickListener(this);
     }
 
 
@@ -42,10 +43,18 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         LayoutInflater inflater = LayoutInflater.from(this);
         View v = inflater.inflate(R.layout.dialog_update, null);
         mDialog = new AlertDialog.Builder(AboutActivity.this).create();
+        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0x00000000));
         mDialog.show();
         mDialog.getWindow().setContentView(v);
-        mButton = (Button) v.findViewById(R.id.btn_ensure2);
-        mButton.setOnClickListener(new View.OnClickListener() {
+        mButton_ensure = (Button) v.findViewById(R.id.btn_ensure2);
+        mButton_cancel = (Button) v.findViewById(R.id.btn_cancel2);
+        mButton_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mButton_ensure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
@@ -57,7 +66,10 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back_about:
-                startActivity(new Intent(this, MainActivity.class));
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("isAbout", false);
+                startActivity(intent);
+                finish();
                 break;
             case R.id.update:
                 initDialog();
