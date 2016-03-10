@@ -28,7 +28,6 @@ import android.widget.Toast;
 import com.nexfi.yuanpeigen.bean.ChatMessage;
 import com.nexfi.yuanpeigen.dao.BuddyDao;
 import com.nexfi.yuanpeigen.nexfi.R;
-import com.nexfi.yuanpeigen.service.NotificationService;
 import com.nexfi.yuanpeigen.util.SocketUtils;
 import com.nexfi.yuanpeigen.weight.MyListViewAdapater;
 
@@ -104,14 +103,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
+   /* @Override
     protected void onStop() {
         super.onStop();
         Intent intent3 = new Intent(this, NotificationService.class);
         intent3.putExtra("avatar", avatar);
         intent3.putExtra("username", username);
         startService(intent3);
-    }
+    }*/
 
     /*    private void showNotification() {
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

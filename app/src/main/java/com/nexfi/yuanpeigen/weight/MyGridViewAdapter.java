@@ -1,6 +1,7 @@
 package com.nexfi.yuanpeigen.weight;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -38,6 +39,7 @@ public class MyGridViewAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setGravity(Gravity.CENTER);
         ImageView iv = new ImageView(context);
         iv.setImageResource(userHeadIcon[position]);
         linearLayout.addView(iv);

@@ -2,18 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="250dp"
-    android:padding="10dp">
+    android:padding="12dp">
 
     <GridView
         android:id="@+id/gridView"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_marginLeft="10dp"
         android:horizontalSpacing="10dp"
         android:layoutAnimation="@anim/layout_grid_inverse_fade"
         android:listSelector="@android:color/transparent"
         android:numColumns="4"
-        android:verticalSpacing="10dp"></GridView>
+        android:verticalSpacing="10dp" />
 
 
     <Button
