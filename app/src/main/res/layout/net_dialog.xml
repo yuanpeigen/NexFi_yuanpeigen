@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Adhoc模式"
+            android:text="NexFi"
             android:textColor="#000"
             android:textSize="16sp" />
     </LinearLayout>
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="WiFi模式"
+            android:text="WiFi"
             android:textColor="#000"
             android:textSize="16sp" />
     </LinearLayout>

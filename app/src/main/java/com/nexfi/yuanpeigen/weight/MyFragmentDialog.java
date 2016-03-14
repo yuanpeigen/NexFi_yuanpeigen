@@ -53,7 +53,7 @@ public class MyFragmentDialog extends DialogFragment {
                 if (isRoot()) {
                     isRoot = upgradeRootPermission(getActivity().getPackageCodePath());
                     if (isRoot) {
-                        Toast.makeText(getActivity(), "Adhoc模式开启成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "NexFi开启成功", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), "请重新授权", Toast.LENGTH_SHORT).show();
                     }
