@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.nexfi.yuanpeigen.nexfi.R;
 
 import java.io.DataOutputStream;
+import java.io.File;
 
 /**
  * Created by Mark on 2016/3/14.
@@ -23,6 +24,7 @@ public class MyFragmentDialog extends DialogFragment {
     private TextView tv_adhoc, tv_wifi;
     private WifiManager wifiManager;
     private AlertDialog alertDialog;
+    private boolean isRoot;
 
 
     @Override
@@ -48,9 +50,17 @@ public class MyFragmentDialog extends DialogFragment {
         tv_adhoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                upgradeRootPermission(getActivity().getPackageCodePath());
-                Toast.makeText(getActivity(), "Adhoc模式已开启", Toast.LENGTH_SHORT).show();
-                alertDialog.dismiss();
+                if (isRoot()) {
+                    isRoot = upgradeRootPermission(getActivity().getPackageCodePath());
+                    if (isRoot) {
+                        Toast.makeText(getActivity(), "Adhoc模式开启成功", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), "请重新授权", Toast.LENGTH_SHORT).show();
+                    }
+                    alertDialog.dismiss();
+                } else {
+                    Toast.makeText(getActivity(), "抱歉，您手机尚未Root", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         builder.setView(view);
@@ -58,6 +68,7 @@ public class MyFragmentDialog extends DialogFragment {
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0x00000000));
         return alertDialog;
     }
+
 
     /**
      * 应用程序运行命令获取 Root权限
@@ -85,5 +96,18 @@ public class MyFragmentDialog extends DialogFragment {
             }
         }
         return true;
+    }
+
+    public boolean isRoot() {
+        boolean bool = false;
+        try {
+            if ((!new File("/system/bin/su").exists()) && (!new File("/system/xbin/su").exists())) {
+                bool = false;
+            } else {
+                bool = true;
+            }
+        } catch (Exception e) {
+        }
+        return bool;
     }
 }
