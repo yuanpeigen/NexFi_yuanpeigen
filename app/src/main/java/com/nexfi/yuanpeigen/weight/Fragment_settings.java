@@ -17,7 +17,7 @@ import com.nexfi.yuanpeigen.nexfi.R;
  */
 public class Fragment_settings extends Fragment implements View.OnClickListener {
 
-    private RelativeLayout modify_userinfo, about;
+    private RelativeLayout modify_userinfo, about, net_settings;
     private View view;
 
 
@@ -36,6 +36,8 @@ public class Fragment_settings extends Fragment implements View.OnClickListener 
     private void initView() {
         modify_userinfo = (RelativeLayout) view.findViewById(R.id.modify_userInfo);
         about = (RelativeLayout) view.findViewById(R.id.about);
+        net_settings = (RelativeLayout) view.findViewById(R.id.net_settings);
+        net_settings.setOnClickListener(this);
         modify_userinfo.setOnClickListener(this);
         about.setOnClickListener(this);
     }
@@ -54,6 +56,11 @@ public class Fragment_settings extends Fragment implements View.OnClickListener 
                 startActivity(intent);
                 getActivity().finish();
                 break;
+            case R.id.net_settings:
+                MyFragmentDialog myFragmentDialog = new MyFragmentDialog();
+                myFragmentDialog.show(getFragmentManager(), "netDialog");
+                break;
         }
     }
+
 }
