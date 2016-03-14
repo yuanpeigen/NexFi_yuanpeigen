@@ -48,10 +48,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private ListView lv;
     private Button sendMsg;
     private PopupWindow mPopupWindow = null;
-    private ImageView iv;
+    private ImageView iv, iv_add, iv_chatRoom, iv_pic, iv_photo, iv_folder;
     private View View_pop;
     private EditText editText, et_chat;
-    private LinearLayout modify_name, release;
+    private LinearLayout modify_name, release, layout_view;
     private Dialog mDialog_modify, mDialog_remove;
     private RelativeLayout back;
     private MyListViewAdapater mListViewAdapater;
@@ -60,7 +60,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private TextView nick;
     private int length;
     private DatagramSocket mDataSocket;
-    private ChatMessage chatMessage;
+    private static final String ACTION = "com.nexfi.yuanpeigen";
+    private boolean visibility_Flag = false;
     /**
      * 数据
      */
@@ -99,37 +100,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         setOnClickListener();
         initmyAvatar();
         length = mDataArrays.size();
-        chatMessage = new ChatMessage();
-
     }
-
-   /* @Override
-    protected void onStop() {
-        super.onStop();
-        Intent intent3 = new Intent(this, NotificationService.class);
-        intent3.putExtra("avatar", avatar);
-        intent3.putExtra("username", username);
-        startService(intent3);
-    }*/
-
-    /*    private void showNotification() {
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(this);
-        Intent resultIntent = new Intent(this, ChatActivity.class);
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), avatar);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        notifyBuilder.setContentTitle(username)
-                .setContentText("您有新消息")
-                .setLargeIcon(bitmap)
-                .setSmallIcon(avatar)
-                .setAutoCancel(true)
-                .setNumber(mDataArrays.size() - length)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setPriority(Notification.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent)
-                .setWhen(System.currentTimeMillis());
-        manager.notify(52, notifyBuilder.build());
-    }*/
 
 
     private void initReUDP() {
@@ -167,10 +138,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         release = (LinearLayout) View_pop.findViewById(R.id.release_connection);
         iv = (ImageView) findViewById(R.id.iv_man);
         lv = (ListView) findViewById(R.id.lv_chat);
+        iv_add = (ImageView) findViewById(R.id.iv_add);
         et_chat = (EditText) findViewById(R.id.et_chat);
+        layout_view = (LinearLayout) findViewById(R.id.layout_view);
         nick = (TextView) findViewById(R.id.textView);
         nick.setText(username);
         sendMsg = (Button) findViewById(R.id.btn_sendMsg);
+        iv_chatRoom = (ImageView) findViewById(R.id.iv_chatRoom);
+        iv_folder = (ImageView) findViewById(R.id.iv_folder);
+        iv_photo = (ImageView) findViewById(R.id.iv_photograph);
+        iv_pic = (ImageView) findViewById(R.id.iv_pic);
+
     }
 
 
@@ -240,6 +218,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         release.setOnClickListener(this);
         back.setOnClickListener(this);
         sendMsg.setOnClickListener(this);
+        iv_add.setOnClickListener(this);
+        iv_chatRoom.setOnClickListener(this);
+        iv_folder.setOnClickListener(this);
+        iv_pic.setOnClickListener(this);
+        iv_photo.setOnClickListener(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(ChatActivity.this, MainActivity.class);
+        intent.putExtra("Dialog", false);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -247,6 +239,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.iv_man:
                 initPop();
+                break;
+            case R.id.iv_add:
+                if (visibility_Flag) {
+                    layout_view.setVisibility(View.GONE);
+                    visibility_Flag = false;
+                } else {
+                    layout_view.setVisibility(View.VISIBLE);
+                    visibility_Flag = true;
+                }
                 break;
             case R.id.modify_name:
                 initDialog_modify();
@@ -259,6 +260,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 intent.putExtra("Dialog", false);
                 startActivity(intent);
                 finish();
+                break;
+            case R.id.iv_chatRoom:
+                Toast.makeText(this, "群聊", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.iv_photograph:
+                Toast.makeText(this, "拍照", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.iv_folder:
+                Toast.makeText(this, "文件", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.iv_pic:
+                Toast.makeText(this, "图片", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_sendMsg:
                 send();
