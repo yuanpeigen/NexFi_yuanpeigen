@@ -1,6 +1,8 @@
 package com.nexfi.yuanpeigen.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -18,14 +20,22 @@ import com.nexfi.yuanpeigen.util.UserInfo;
 public class ModifyUsernameActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView cancel, finish;
     private EditText modifyUsername;
+    private String username;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_username);
+        initUsername();
         initView();
+        modifyUsername.setHint(username);
         setOnclicklistener();
+    }
+
+    private void initUsername() {
+        SharedPreferences preferences = getSharedPreferences("username", Context.MODE_PRIVATE);
+        username = preferences.getString("userName", "宝宝");
     }
 
     private void setOnclicklistener() {

@@ -12,7 +12,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tv_sendtime"
+            android:id="@+id/tv_sendtime_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="2dp"
@@ -27,7 +27,7 @@
         android:layout_marginTop="7dp">
 
         <ImageView
-            android:id="@+id/iv_userhead"
+            android:id="@+id/iv_userhead_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -38,16 +38,16 @@
             android:src="@mipmap/user_head_male_1" />
 
         <TextView
-            android:id="@+id/tv_chatcontent"
+            android:id="@+id/tv_chatText_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/iv_userhead"
+            android:layout_toLeftOf="@+id/iv_userhead_send"
             android:background="@drawable/chat_to_img_bg_normal"
             android:focusable="true"
             android:gravity="left|center"
             android:lineSpacingExtra="2dp"
-            android:minHeight="50dp"
+            android:minHeight="35dp"
             android:textColor="#ff000000"
             android:textSize="15sp" />
 

@@ -53,5 +53,6 @@
         android:padding="3dp"
         android:singleLine="true"
         android:textColor="#000"
+        android:textColorHint="#000"
         android:textSize="16sp" />
 </LinearLayout>

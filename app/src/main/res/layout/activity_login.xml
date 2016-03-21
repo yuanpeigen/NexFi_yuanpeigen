@@ -50,7 +50,7 @@
                 android:id="@+id/iv_userhead_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/user_head_female_3" />
+                android:src="@mipmap/user_head_female_default" />
 
             <TextView
                 android:layout_width="wrap_content"

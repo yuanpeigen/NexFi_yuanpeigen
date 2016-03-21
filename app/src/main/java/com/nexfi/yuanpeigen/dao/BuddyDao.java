@@ -1,4 +1,5 @@
 package com.nexfi.yuanpeigen.dao;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -38,13 +39,12 @@ public class BuddyDao {
         values.put("type", user.type);
         db.insert("long", null, values);
         db.close();
-        // 鏁版嵁搴撴暟鎹彂鐢熷彉鍖栭€氱煡鍐呭瑙傚療鑰?
         context.getContentResolver().notifyChange(
                 Uri.parse("content://www.nexfi.com"), null);
     }
 
     /**
-     * 淇濆瓨鍗曞鍗曡亰澶╀俊鎭?
+     * 添加消息到数据库
      */
     public void addP2PMsg(ChatMessage msg) {
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -55,9 +55,15 @@ public class BuddyDao {
         values.put("content", msg.content);
         values.put("toIP", msg.toIP);
         values.put("type", msg.type);
-        values.put("isComMeg", msg.isComMeg);
+        values.put("msgType", msg.msgType);
         values.put("sendTime", msg.sendTime);
-        db.insert("chatMesg", null, values);
+        //TODO
+        values.put("fileName",msg.fileName);
+        values.put("fileSize",msg.fileSize);
+        values.put("fileIcon",msg.fileIcon);
+        values.put("isPb",msg.isPb);
+        values.put("filePath",msg.filePath);
+        db.insert("chatMsgFilePath", null, values);
         db.close();
     }
 
@@ -65,7 +71,7 @@ public class BuddyDao {
     //閸掔娀娅?----------------------------------------------------------------------
 
     /**
-     * 閺嶈宓両P閸掔娀娅庨弫鐗堝祦鎼存挷鑵戦悽銊﹀煕閻ㄥ嫭鏆熼幑?
+     * 根据IP删除
      */
     public void delete(String contact_ip) {
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -76,19 +82,18 @@ public class BuddyDao {
 
 
     /**
-     * 閺嶈宓両P閸掔娀娅庨弫鐗堝祦鎼存挷鑵戦崡鏇烆嚠閸楁洝浜版径鈺€淇婇幁顖滄畱閺佺増宓?
+     * 根据IP删除聊天信息
      */
     public void deleteP2PMsg(String fromIP) {
         SQLiteDatabase db = helper.getWritableDatabase();
-        int row = db.delete("chatMesg", "fromIP = ?",
+        int row = db.delete("chatMsgFilePath", "fromIP = ?",
                 new String[]{fromIP});
         db.close();
     }
 
 
-    //濞撳懐鈹?----------------------------------------------------------------------
 
-    //濞撳懐鈹栭弫鐗堝祦鎼?
+    //删除所有用户信息
     public void deleteAll() {
         SQLiteDatabase db = helper.getWritableDatabase();
         int row = db.delete("long", null, null);
@@ -96,19 +101,18 @@ public class BuddyDao {
     }
 
 
-    //濞撳懐鈹栭弫鐗堝祦鎼?
+    //删除所有聊天信息
     public void deleteP2PMsgAll() {
         SQLiteDatabase db = helper.getWritableDatabase();
-        int row = db.delete("chatMesg", null, null);
+        int row = db.delete("chatMsgFilePath", null, null);
         db.close();
     }
 
 
-    //閺屻儲澹橀幍鈧張?----------------------------------------------------------------------
 
 
     /**
-     * 閺屻儴顕楅幍鈧張澶屾畱閻劍鍩涢弫鐗堝祦
+     * 查找所有用户
      *
      * @return
      */
@@ -138,14 +142,14 @@ public class BuddyDao {
 
 
     /**
-     * 鏌ヨ鎵€鏈夌殑鍗曞鍗曡亰澶╀俊鎭?
+     * 查找所有聊天信息
      *
      * @return
      */
     public List<ChatMessage> findP2PMsgAll() {
 
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor cursor = db.query("chatMesg", null, null, null, null, null, null);
+        Cursor cursor = db.query("chatMsgFilePath", null, null, null, null, null, null);
         List<ChatMessage> mDatas = new ArrayList<ChatMessage>();
         List<ChatMessage> mList = new ArrayList<ChatMessage>();
         while (cursor.moveToNext()) {
@@ -156,8 +160,14 @@ public class BuddyDao {
             msg.content = cursor.getString(cursor.getColumnIndex("content"));
             msg.fromAvatar = cursor.getInt(cursor.getColumnIndex("fromAvatar"));
             msg.toIP = cursor.getString(cursor.getColumnIndex("toIP"));
-            msg.isComMeg=cursor.getInt(cursor.getColumnIndex("isComMeg"));
+            msg.msgType=cursor.getInt(cursor.getColumnIndex("msgType"));
             msg.sendTime = cursor.getString(cursor.getColumnIndex("sendTime"));
+            //TODO
+            msg.fileName = cursor.getString(cursor.getColumnIndex("fileName"));
+            msg.fileSize = cursor.getLong(cursor.getColumnIndex("fileSize"));
+            msg.fileIcon = cursor.getInt(cursor.getColumnIndex("fileIcon"));
+            msg.isPb = cursor.getInt(cursor.getColumnIndex("isPb"));
+            msg.filePath=cursor.getString(cursor.getColumnIndex("filePath"));
             mList.add(msg);
         }
         for (int i = 0; i < mList.size(); i++) {
@@ -175,7 +185,7 @@ public class BuddyDao {
 
 
     /**
-     * 閺嶈宓両P閺屻儴顕楅悽銊﹀煕閺勵垰鎯侀崷銊︽殶閹诡喖绨遍柌宀勬桨
+     * 根据IP查找是否有同样的用户数据
      *
      * @param contact_ip
      */
@@ -205,7 +215,7 @@ public class BuddyDao {
 //		SQLiteDatabase db = helper.getReadableDatabase();
 ////		Cursor cursor = db.query("bao", null, "contact_ip = ?",
 ////				new String[] { contact_ip }, null, null, null);
-//		Cursor cursor = db.query("chatMesg", null,"fromIP = ?", new String[] { fromIP }, null, null, null);
+//		Cursor cursor = db.query("chatMessa", null,"fromIP = ?", new String[] { fromIP }, null, null, null);
 //
 //		if (cursor.moveToNext()) {
 //			result = true;
