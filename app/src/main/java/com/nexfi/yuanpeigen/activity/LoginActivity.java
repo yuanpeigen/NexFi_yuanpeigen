@@ -202,10 +202,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_finish:
-                finish();
+                finishUsername();
                 break;
             case R.id.tv_finish:
-                finish();
+                finishUsername();
                 break;
             case R.id.set_userheadIcon:
                 initPop();
@@ -216,9 +216,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.layout_username:
                 Intent intent = new Intent(LoginActivity.this, UsernameActivity.class);
                 startActivityForResult(intent, 1);
-                finish();
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(this, "您还未输入完信息哦", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -230,7 +234,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public void finish() {
+    public void finishUsername() {
         if (nick_name != null) {
             ChatUser user = new ChatUser();
             user.nick = nick_name;
@@ -241,7 +245,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             SocketUtils.startSendThread(xml);
             UserInfo.setConfigurationInformation(LoginActivity.this);
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            this.onDestroy();
+            finish();
         } else {
             Toast.makeText(this, "昵称不能为空哦", Toast.LENGTH_SHORT).show();
         }

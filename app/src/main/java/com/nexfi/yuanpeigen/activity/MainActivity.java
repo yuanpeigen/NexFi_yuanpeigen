@@ -34,7 +34,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private Fragment_settings fragment_settings;
     private Handler handler;
     private Handler mHandler;
-    private boolean isExit, isDialog = true, isUserInfo, isAbout;
+    private boolean isExit, isDialog = true, isUserInfo, isAbout, isDialogRoom = true;
     private FragmentManager mFragmentManager;
     private RadioGroup myTabRg;
     private RadioButton rb_nearby, rb_settings;
@@ -55,7 +55,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
             initSettingsFragment();
         }
         isDialog = intent.getBooleanExtra("Dialog", true);
-        if (isDialog && isUserInfo && isAbout) {
+        isDialogRoom = intent.getBooleanExtra("DialogRoom", true);
+        if (isDialog && isUserInfo && isAbout && isDialogRoom) {
             initDialog();
             handler = new Handler();
             handler.postDelayed(this, 1000);

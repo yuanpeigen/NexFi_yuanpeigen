@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by Mark on 2016/2/17.
  */
-public class MyListViewAdapater extends BaseAdapter {
+public class ChatMessageAdapater extends BaseAdapter {
     private LayoutInflater mInflater;
     private List<ChatMessage> coll;
     private Context mContext;
@@ -29,14 +29,14 @@ public class MyListViewAdapater extends BaseAdapter {
     private static final int MESSAGE_TYPE_SEND_FOLDER = 2;
     private static final int MESSAGE_TYPE_RECV_FOLDER = 3;
 
-    public MyListViewAdapater(Context context, List<ChatMessage> coll) {
+    public ChatMessageAdapater(Context context, List<ChatMessage> coll) {
         this.coll = coll;
         mInflater = LayoutInflater.from(context);
         this.mContext = context;
     }
 
 
-    private static final String TAG = MyListViewAdapater.class.getSimpleName();
+    private static final String TAG = ChatMessageAdapater.class.getSimpleName();
 
     @Override
     public int getViewTypeCount() {

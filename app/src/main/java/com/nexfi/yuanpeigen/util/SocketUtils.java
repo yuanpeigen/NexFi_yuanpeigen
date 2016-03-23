@@ -52,6 +52,30 @@ public class SocketUtils {
     }
 
 
+
+
+    public static void sendBroadcastRoom(String msg) {
+        try {
+            /*鍒涘缓socket瀹炰緥*/
+            MulticastSocket ms = new MulticastSocket();
+            ms.setBroadcast(true);
+            InetAddress address = InetAddress.getByName("224.0.0.110");
+            //String sendData=mEditText.getText().toString().trim();
+            byte[] data = msg.getBytes();
+            DatagramPacket dataPacket = new DatagramPacket(data, data.length, address,
+                    8007);
+            //鍔犲叆缁?
+            ms.joinGroup(address);
+            //鍙戦€?
+            ms.send(dataPacket);
+            ms.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     //鍙戦€佸崟鎾?
     public static void sendUDP(String destIP, String msg) {
         try {

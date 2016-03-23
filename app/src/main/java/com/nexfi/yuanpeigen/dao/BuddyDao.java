@@ -23,7 +23,6 @@ public class BuddyDao {
         helper = new BuddyHelper(context);
     }
 
-    //濞ｈ濮?----------------------------------------------------------------------
 
     /**
      * 閹跺﹦鏁ら幋椋庢畱娣団剝浼呭ǎ璇插閸掔増鏆熼幑顔肩氨
@@ -44,7 +43,7 @@ public class BuddyDao {
     }
 
     /**
-     * 添加消息到数据库
+     * 添加单聊消息到数据库
      */
     public void addP2PMsg(ChatMessage msg) {
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -58,17 +57,40 @@ public class BuddyDao {
         values.put("msgType", msg.msgType);
         values.put("sendTime", msg.sendTime);
         //TODO
-        values.put("fileName",msg.fileName);
-        values.put("fileSize",msg.fileSize);
-        values.put("fileIcon",msg.fileIcon);
-        values.put("isPb",msg.isPb);
-        values.put("filePath",msg.filePath);
+        values.put("fileName", msg.fileName);
+        values.put("fileSize", msg.fileSize);
+        values.put("fileIcon", msg.fileIcon);
+        values.put("isPb", msg.isPb);
+        values.put("filePath", msg.filePath);
         db.insert("chatMsgFilePath", null, values);
         db.close();
     }
 
 
-    //閸掔娀娅?----------------------------------------------------------------------
+    /**
+     * 添加群聊消息到数据库
+     */
+    public void addRoomMsg(ChatMessage msg) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("fromIP", msg.fromIP);
+        values.put("fromNick", msg.fromNick);
+        values.put("fromAvatar", msg.fromAvatar);
+        values.put("content", msg.content);
+        values.put("toIP", msg.toIP);
+        values.put("type", msg.type);
+        values.put("msgType", msg.msgType);
+        values.put("sendTime", msg.sendTime);
+        //TODO
+        values.put("fileName", msg.fileName);
+        values.put("fileSize", msg.fileSize);
+        values.put("fileIcon", msg.fileIcon);
+        values.put("isPb", msg.isPb);
+        values.put("filePath", msg.filePath);
+        db.insert("chatRoomMsg", null, values);
+        db.close();
+    }
+
 
     /**
      * 根据IP删除
@@ -82,7 +104,7 @@ public class BuddyDao {
 
 
     /**
-     * 根据IP删除聊天信息
+     * 根据IP删除单聊聊天信息
      */
     public void deleteP2PMsg(String fromIP) {
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -91,6 +113,16 @@ public class BuddyDao {
         db.close();
     }
 
+
+    /**
+     * 根据IP删除群聊聊天信息
+     */
+    public void deleteRoomMsg(String fromIP) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        int row = db.delete("chatRoomMsg", "fromIP = ?",
+                new String[]{fromIP});
+        db.close();
+    }
 
 
     //删除所有用户信息
@@ -101,7 +133,7 @@ public class BuddyDao {
     }
 
 
-    //删除所有聊天信息
+    //删除所有单聊聊天信息
     public void deleteP2PMsgAll() {
         SQLiteDatabase db = helper.getWritableDatabase();
         int row = db.delete("chatMsgFilePath", null, null);
@@ -109,6 +141,12 @@ public class BuddyDao {
     }
 
 
+    //删除所有群聊聊天信息
+    public void deleteRoomMsgAll() {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        int row = db.delete("chatRoomMsg", null, null);
+        db.close();
+    }
 
 
     /**
@@ -142,7 +180,7 @@ public class BuddyDao {
 
 
     /**
-     * 查找所有聊天信息
+     * 查找所有单聊聊天信息
      *
      * @return
      */
@@ -160,14 +198,54 @@ public class BuddyDao {
             msg.content = cursor.getString(cursor.getColumnIndex("content"));
             msg.fromAvatar = cursor.getInt(cursor.getColumnIndex("fromAvatar"));
             msg.toIP = cursor.getString(cursor.getColumnIndex("toIP"));
-            msg.msgType=cursor.getInt(cursor.getColumnIndex("msgType"));
+            msg.msgType = cursor.getInt(cursor.getColumnIndex("msgType"));
             msg.sendTime = cursor.getString(cursor.getColumnIndex("sendTime"));
             //TODO
             msg.fileName = cursor.getString(cursor.getColumnIndex("fileName"));
             msg.fileSize = cursor.getLong(cursor.getColumnIndex("fileSize"));
             msg.fileIcon = cursor.getInt(cursor.getColumnIndex("fileIcon"));
             msg.isPb = cursor.getInt(cursor.getColumnIndex("isPb"));
-            msg.filePath=cursor.getString(cursor.getColumnIndex("filePath"));
+            msg.filePath = cursor.getString(cursor.getColumnIndex("filePath"));
+            mList.add(msg);
+        }
+        for (int i = 0; i < mList.size(); i++) {
+            if (!mDatas.contains(mList.get(i))) {
+                mDatas.add(mList.get(i));
+            }
+        }
+        cursor.close();
+        db.close();
+        return mDatas;
+    }
+
+
+    /**
+     * 查找所有群聊聊天信息
+     *
+     * @return
+     */
+    public List<ChatMessage> findRoomMsgAll() {
+
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor cursor = db.query("chatRoomMsg", null, null, null, null, null, null);
+        List<ChatMessage> mDatas = new ArrayList<ChatMessage>();
+        List<ChatMessage> mList = new ArrayList<ChatMessage>();
+        while (cursor.moveToNext()) {
+            ChatMessage msg = new ChatMessage();
+            msg.fromIP = cursor.getString(cursor.getColumnIndex("fromIP"));
+            msg.fromNick = cursor.getString(cursor.getColumnIndex("fromNick"));
+            msg.type = cursor.getString(cursor.getColumnIndex("type"));
+            msg.content = cursor.getString(cursor.getColumnIndex("content"));
+            msg.fromAvatar = cursor.getInt(cursor.getColumnIndex("fromAvatar"));
+            msg.toIP = cursor.getString(cursor.getColumnIndex("toIP"));
+            msg.msgType = cursor.getInt(cursor.getColumnIndex("msgType"));
+            msg.sendTime = cursor.getString(cursor.getColumnIndex("sendTime"));
+            //TODO
+            msg.fileName = cursor.getString(cursor.getColumnIndex("fileName"));
+            msg.fileSize = cursor.getLong(cursor.getColumnIndex("fileSize"));
+            msg.fileIcon = cursor.getInt(cursor.getColumnIndex("fileIcon"));
+            msg.isPb = cursor.getInt(cursor.getColumnIndex("isPb"));
+            msg.filePath = cursor.getString(cursor.getColumnIndex("filePath"));
             mList.add(msg);
         }
         for (int i = 0; i < mList.size(); i++) {

@@ -34,7 +34,7 @@ import com.nexfi.yuanpeigen.dao.BuddyDao;
 import com.nexfi.yuanpeigen.nexfi.R;
 import com.nexfi.yuanpeigen.util.FileUtils;
 import com.nexfi.yuanpeigen.util.SocketUtils;
-import com.nexfi.yuanpeigen.weight.MyListViewAdapater;
+import com.nexfi.yuanpeigen.weight.ChatMessageAdapater;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -69,7 +69,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout modify_name, release, layout_view;
     private Dialog mDialog_modify, mDialog_remove;
     private RelativeLayout back;
-    private MyListViewAdapater mListViewAdapater;
+    private ChatMessageAdapater mListViewAdapater;
     private String toIp, username, localIP;
     private int avatar, myAvatar;
     private TextView nick;
@@ -78,9 +78,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public static final int REQUEST_CODE_SELECT_FILE = 1;
     private String fileName;
     private long fileSize;
-    String select_file_path = "";//发送端选择的文件的路径
+    private String select_file_path = "";//发送端选择的文件的路径
 
-    String rece_file_path = "";//接收端文件的保存路径
+    private String rece_file_path = "";//接收端文件的保存路径
 
     /**
      * 数据
@@ -567,7 +567,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void setAdapter() {
         BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
         mDataArrays = buddyDao.findP2PMsgAll();
-        mListViewAdapater = new MyListViewAdapater(getApplicationContext(), mDataArrays);
+        mListViewAdapater = new ChatMessageAdapater(getApplicationContext(), mDataArrays);
         lv.setAdapter(mListViewAdapater);
     }
 
@@ -674,21 +674,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 finish();
                 break;
             case R.id.iv_chatRoom:
-                Toast.makeText(this, "群聊", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "即将上线，敬请期待", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.iv_photograph:
-                Toast.makeText(this, "拍照", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "即将上线，敬请期待", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.iv_folder:
                 /**
                  * 发送文件
                  * */
                 selectFileFromLocal();
-                Toast.makeText(this, "文件", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.iv_pic:
                 selectFileFromLocal();
-                Toast.makeText(this, "图片", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_sendMsg:
                 send();

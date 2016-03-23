@@ -9,7 +9,7 @@ public class ChatMessage extends ProtocalObj implements Serializable {
     public int fromAvatar;
     public String content;
     public String toIP;
-    public String type;
+    public String type;//聊天消息类型：单聊，群聊
     public int msgType;
     public String sendTime;
     //TODO
