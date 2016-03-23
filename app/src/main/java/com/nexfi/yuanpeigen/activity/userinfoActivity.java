@@ -176,6 +176,7 @@ public class UserinfoActivity extends AppCompatActivity implements View.OnClickL
             case R.id.iv_back:
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("isUserInfo", false);
+                intent.putExtra("isSettings", false);
                 startActivity(intent);
                 finish();
                 sendUDP();

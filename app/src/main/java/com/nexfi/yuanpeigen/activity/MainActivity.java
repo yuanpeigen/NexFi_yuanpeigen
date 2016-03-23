@@ -34,12 +34,11 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private Fragment_settings fragment_settings;
     private Handler handler;
     private Handler mHandler;
-    private boolean isExit, isDialog = true, isUserInfo, isAbout, isDialogRoom = true;
+    private boolean isExit, isDialog = true, isUserInfo, isAbout, isDialogRoom, isSettings = true;
     private FragmentManager mFragmentManager;
     private RadioGroup myTabRg;
     private RadioButton rb_nearby, rb_settings;
     private AlertDialog mAlertDialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +54,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
             initSettingsFragment();
         }
         isDialog = intent.getBooleanExtra("Dialog", true);
-        isDialogRoom = intent.getBooleanExtra("DialogRoom", true);
+        isDialogRoom = intent.getBooleanExtra("DialogRoom", false);
         if (isDialog && isUserInfo && isAbout && isDialogRoom) {
             initDialog();
             handler = new Handler();
@@ -68,6 +67,12 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                 isExit = false;
             }
         };
+        isSettings = intent.getBooleanExtra("isSettings", true);
+        if (!isSettings) {
+            rb_settings.setChecked(true);
+        } else {
+            rb_nearby.setChecked(true);
+        }
     }
 
 
@@ -118,7 +123,6 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private void initView() {
         myTabRg = (RadioGroup) findViewById(R.id.tab_menu);
         rb_nearby = (RadioButton) findViewById(R.id.rb_nearby);
-        rb_nearby.setChecked(true);
         rb_settings = (RadioButton) findViewById(R.id.rb_settings);
         myTabRg.setOnCheckedChangeListener(this);
     }

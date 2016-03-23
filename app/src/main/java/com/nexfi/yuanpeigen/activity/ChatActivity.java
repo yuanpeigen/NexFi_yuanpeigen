@@ -225,26 +225,28 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 /**
                  * 文件接收
                  * */
-                chatMessage.fromAvatar = avatar;
-                chatMessage.msgType = 3;
-                if (file_name.length() > 23) {
-                    file_name = file_name.substring(0, 23) + "\n" + file_name.substring(23);
-                }
-                chatMessage.fileName = file_name;
-                chatMessage.fileSize = finalTa;
-                chatMessage.sendTime = getDateNow();
-                mDataArrays.add(chatMessage);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mListViewAdapater != null) {
-                            mListViewAdapater.notifyDataSetChanged();
-                        }
-                        if (mDataArrays.size() > 0) {
-                            lv.setSelection(lv.getCount() - 1);
-                        }
+                if (chatMessage.fromIP == toIp) {
+                    chatMessage.fromAvatar = avatar;
+                    chatMessage.msgType = 3;
+                    if (file_name.length() > 23) {
+                        file_name = file_name.substring(0, 23) + "\n" + file_name.substring(23);
                     }
-                });
+                    chatMessage.fileName = file_name;
+                    chatMessage.fileSize = finalTa;
+                    chatMessage.sendTime = getDateNow();
+                    mDataArrays.add(chatMessage);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mListViewAdapater != null) {
+                                mListViewAdapater.notifyDataSetChanged();
+                            }
+                            if (mDataArrays.size() > 0) {
+                                lv.setSelection(lv.getCount() - 1);
+                            }
+                        }
+                    });
+                }
 //                pb_receive.setMax(ta);//-----设置进度条最大值---------------------------------------------------------
                 byte[] buf = new byte[1024 * 1024];
                 //循环接收
@@ -288,7 +290,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     }
                 });
-
 
                 BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
                 buddyDao.addP2PMsg(chatMessage);
@@ -572,13 +573,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void receive(ChatMessage chatMessage) {
-        chatMessage.fromAvatar = avatar;
-        chatMessage.msgType = 1;
-        BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
-        buddyDao.addP2PMsg(chatMessage);
-        mDataArrays.add(chatMessage);
-        mListViewAdapater.notifyDataSetChanged();
-        lv.setSelection(lv.getCount() - 1);
+        if (chatMessage.fromIP == toIp) {
+            chatMessage.fromAvatar = avatar;
+            chatMessage.msgType = 1;
+            BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
+            buddyDao.addP2PMsg(chatMessage);
+            mDataArrays.add(chatMessage);
+            mListViewAdapater.notifyDataSetChanged();
+            lv.setSelection(lv.getCount() - 1);
+        }
     }
 
     private void send() {
