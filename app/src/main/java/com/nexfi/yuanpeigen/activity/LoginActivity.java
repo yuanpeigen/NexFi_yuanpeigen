@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private View view;
     private Handler handler;
     private AlertDialog mAlertDialog;
-    private int avatar;
+    private int avatar = R.mipmap.user_head_female_3;
     private ImageView iv_userheadIcon;
     private int[] userHeadFlagIcon = {R.mipmap.user_head_female_1, R.mipmap.user_head_female_2, R.mipmap.user_head_female_3, R.mipmap.user_head_female_4, R.mipmap.user_head_male_1, R.mipmap.user_head_male_2, R.mipmap.user_head_male_3, R.mipmap.user_head_male_4};
 
@@ -123,6 +123,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         ViewsetOnclickLisener();
         gridViewSetOnclickLisener();
         radioSetOnCheckedListener();
+        UserInfo.saveUsersex(this, USERSEXFEMALE);
     }
 
     private void initPop() {
@@ -165,8 +166,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 iv_userheadIcon.setImageResource(userHeadFlagIcon[position]);
-                UserInfo.saveUserHeadIcon(LoginActivity.this, userHeadFlagIcon[position]);
                 avatar = userHeadFlagIcon[position];
+                UserInfo.saveUserHeadIcon(LoginActivity.this, avatar);
                 mPopupWindow.dismiss();
             }
         });
@@ -235,7 +236,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void finishUsername() {
-        if (nick_name != null) {
+        if ((nick_name != null)) {
             ChatUser user = new ChatUser();
             user.nick = nick_name;
             user.account = ip;

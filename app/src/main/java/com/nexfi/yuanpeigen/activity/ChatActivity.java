@@ -82,6 +82,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private String rece_file_path = "";//接收端文件的保存路径
 
+    ServerSocket ss = null;
+
     /**
      * 数据
      */
@@ -140,7 +142,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         startActivityForResult(intent, REQUEST_CODE_SELECT_FILE);
     }
 
-
     //开启接收端
     private void startServer() {
 
@@ -148,12 +149,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run() {
                 super.run();
+
+                TcpFenDuanThread longRunningTaskFuture = null;
                 //使用线程池
                 ExecutorService threadpool = Executors.newFixedThreadPool(10);
                 try {
-                    ServerSocket ss = new ServerSocket(10035);
+
                     while (true) {
+                        ss = new ServerSocket(10066);
                         threadpool.execute(new TcpFenDuanThread(ss.accept()));
+                        ss.close();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -161,7 +166,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         }.start();
     }
-
 
     //分段接收线程
     class TcpFenDuanThread implements Runnable {
@@ -181,51 +185,67 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             try {
                 in = s.getInputStream();
-                byte[] filename = new byte[256];
-                in.read(filename);//鎺ユ敹鏂囦欢鍚?
-                String file_name = new String(filename).trim();//文件名
-//                File fileout = new File(Environment.getExternalStorageDirectory().getPath() + "/" + file_name);//鎺ユ敹鍒扮殑鏂囦欢鐨勫瓨鍌ㄨ矾寰?
-                File fileDir = new File(Environment.getExternalStorageDirectory().getPath() + "/NexFi");
-                if (!fileDir.exists()) {
-                    fileDir.mkdirs();
-                }
-                rece_file_path = fileDir + "/" + file_name;
-                File fileout = new File(rece_file_path);//鎺ユ敹鍒扮殑鏂囦欢鐨勫瓨鍌ㄨ矾寰?
-                FileOutputStream fos = new FileOutputStream(fileout);
 
-                byte[] filesize = new byte[64];//瀛樺偍鏂囦欢澶у皬鐨勬暟瀛楃殑瀛楄妭鏁扮粍
-                int b = 0;
-                while (b < filesize.length) {
-                    b += in.read(filesize, b, filesize.length - b);//鏂囦欢澶у皬鐨勫疄闄呭瓧鑺傛暟
-                }
-                int ends = 0;
-                for (int i = 0; i < filesize.length; i++) {
-                    if (filesize[i] == 0) {
-                        ends = i;
-                        break;
+                //TODO----------------------------------------------------------
+                byte[] local = new byte[16];
+                in.read(local);//鎺ユ敹鏂囦欢鍚?
+                String local_ip = new String(local).trim();//ip
+                Log.e("TAG", local_ip + "=========================local_ip--------------========================================");
+
+                if (toIp.equals(local_ip)) {
+                    byte[] filename2 = new byte[256];//
+                    int leng = 0;
+                    while (leng < filename2.length) {
+                        leng += in.read(filename2, leng, filename2.length - leng);//
                     }
-                }
-                String filesizes = new String(filesize, 0, ends);
-                int ta = Integer.parseInt(filesizes);//鏂囦欢鏈韩澶у皬
-                final long fileSize = filesize.length;
+                    String filename = new String(filename2, 0, leng);
+                    Log.e("TAG", filename + "=========================filename2--------------========================================");
+
+
+//                byte[] filename = new byte[256];
+//                in.read(filename);//鎺ユ敹鏂囦欢鍚?
+                    String file_name = new String(filename).trim();//文件名
+//                File fileout = new File(Environment.getExternalStorageDirectory().getPath() + "/" + file_name);//鎺ユ敹鍒扮殑鏂囦欢鐨勫瓨鍌ㄨ矾寰?
+                    File fileDir = new File(Environment.getExternalStorageDirectory().getPath() + "/NexFi");
+                    if (!fileDir.exists()) {
+                        fileDir.mkdirs();
+                    }
+                    rece_file_path = fileDir + "/" + file_name;
+                    File fileout = new File(rece_file_path);//鎺ユ敹鍒扮殑鏂囦欢鐨勫瓨鍌ㄨ矾寰?
+                    FileOutputStream fos = new FileOutputStream(fileout);
+
+                    byte[] filesize = new byte[64];//瀛樺偍鏂囦欢澶у皬鐨勬暟瀛楃殑瀛楄妭鏁扮粍
+                    int b = 0;
+                    while (b < filesize.length) {
+                        b += in.read(filesize, b, filesize.length - b);//鏂囦欢澶у皬鐨勫疄闄呭瓧鑺傛暟
+                    }
+                    int ends = 0;
+                    for (int i = 0; i < filesize.length; i++) {
+                        if (filesize[i] == 0) {
+                            ends = i;
+                            break;
+                        }
+                    }
+                    String filesizes = new String(filesize, 0, ends);
+                    int ta = Integer.parseInt(filesizes);//
+                    final long fileSize = filesize.length;
 //                final String fileName = fileout.getName();//文件名
-                //文件扩展名
-                final String extensionName = FileUtils.getExtensionName(file_name);
-                ChatMessage chatMessage = new ChatMessage();
-                //设置文件接收路径
-                chatMessage.filePath = rece_file_path;
-                //设置文件图标
-                setFileIcon(chatMessage, extensionName);
-                //文件大小
-                final int finalTa = ta;
-                chatMessage.isPb = 1;
+                    //文件扩展名
+                    final String extensionName = FileUtils.getExtensionName(file_name);
+                    ChatMessage chatMessage = new ChatMessage();
+                    //设置文件接收路径
+                    chatMessage.filePath = rece_file_path;
+                    //设置文件图标
+                    setFileIcon(chatMessage, extensionName);
+                    //文件大小
+                    final int finalTa = ta;
+                    chatMessage.isPb = 1;
 
 
-                //TODO
-                /**
-                 * 文件接收
-                 * */
-                if (chatMessage.fromIP == toIp) {
+                    //TODO
+                    /**
+                     * 文件接收
+                     * */
                     chatMessage.fromAvatar = avatar;
                     chatMessage.msgType = 3;
                     if (file_name.length() > 23) {
@@ -234,10 +254,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     chatMessage.fileName = file_name;
                     chatMessage.fileSize = finalTa;
                     chatMessage.sendTime = getDateNow();
+                    //TODO 2016/3/25 10:00
+                    chatMessage.chat_id = local_ip;
                     mDataArrays.add(chatMessage);
+                    //TODO
+                    mListViewAdapater = new ChatMessageAdapater(getApplicationContext(), mDataArrays);
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            lv.setAdapter(mListViewAdapater);
                             if (mListViewAdapater != null) {
                                 mListViewAdapater.notifyDataSetChanged();
                             }
@@ -246,53 +272,58 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         }
                     });
-                }
 //                pb_receive.setMax(ta);//-----设置进度条最大值---------------------------------------------------------
-                byte[] buf = new byte[1024 * 1024];
-                //循环接收
-                while (true) {
-                    if (ta == 0) {
-                        break;
-                    }
-                    int len = ta;
-                    if (len > buf.length) {
-                        len = buf.length;
-                    }
-                    int rlen = in.read(buf, 0, len);
-                    ta -= rlen;//姣忚鍙栦竴娆★紝鍓╀綑鐨勫瓧鑺傛暟
-                    if (rlen > 0) {
-                        fos.write(buf, 0, rlen);
-                        Log.e("TAG", rlen + "---------------------------receive===================");
+                    byte[] buf = new byte[1024 * 1024];
+                    //循环接收
+                    while (true) {
+                        if (ta == 0) {
+                            break;
+                        }
+                        int len = ta;
+                        if (len > buf.length) {
+                            len = buf.length;
+                        }
+                        int rlen = in.read(buf, 0, len);
+                        ta -= rlen;//姣忚鍙栦竴娆★紝鍓╀綑鐨勫瓧鑺傛暟
+                        if (rlen > 0) {
+                            fos.write(buf, 0, rlen);
+                            Log.e("TAG", rlen + "---------------------------receive===================");
 //                        pb_receive.setProgress(progress);//更新进度条进度
-                        fos.flush();
-                    } else {
-                        break;
+                            fos.flush();
+                        } else {
+                            break;
+                        }
                     }
-                }
 //                msg.what = 2;
 //                handler.sendEmptyMessage(2);
 
-                fos.close();
-                in.close();
-                s.close();
-                System.out.println(file_name + "文件接收完毕");
-                Log.e("TAG", file_name + "---------------------------文件接收完毕===================");
-                chatMessage.isPb = 0;
-                //发送完毕就隐藏
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mListViewAdapater != null) {
-                            mListViewAdapater.notifyDataSetChanged();
-                        }
-                        if (mDataArrays.size() > 0) {
-                            lv.setSelection(lv.getCount() - 1);
-                        }
-                    }
-                });
+                    fos.close();
+                    in.close();
+                    s.close();
+                    System.out.println(file_name + "文件接收完毕");
+                    Log.e("TAG", file_name + "---------------------------文件接收完毕===================");
+                    chatMessage.isPb = 0;
 
-                BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
-                buddyDao.addP2PMsg(chatMessage);
+                    mListViewAdapater = new ChatMessageAdapater(getApplicationContext(), mDataArrays);
+
+                    //发送完毕就隐藏
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            lv.setAdapter(mListViewAdapater);
+                            if (mListViewAdapater != null) {
+                                mListViewAdapater.notifyDataSetChanged();
+                            }
+                            if (mDataArrays.size() > 0) {
+                                lv.setSelection(lv.getCount() - 1);
+                            }
+                        }
+                    });
+
+                    BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
+                    buddyDao.addP2PMsg(chatMessage);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -316,10 +347,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 //excel
                 chatMessage.fileIcon = (R.mipmap.xls);
             } else if (("ppt").equals(extensionName)) {
-                //ppt
                 chatMessage.fileIcon = (R.mipmap.ppt);
             } else if ("pdf".equals(extensionName)) {
-                //pdf
                 chatMessage.fileIcon = (R.mipmap.pdf);
             } else if ("jpg".equals(extensionName)) {
                 chatMessage.fileIcon = (R.mipmap.jpg);
@@ -359,7 +388,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         try {
             if (null == s) {
-                s = new Socket(toIp, 10035);
+                s = new Socket(toIp, 10066);
                 Log.e("TAG", toIp + "-------------------------------------------------===============================================");
             }
             s.setSoTimeout(5000);
@@ -385,6 +414,22 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         //设置文件图标
         setFileIcon(chatMessage, extensionName);
+
+        //TODO 2016.3.24  14:40
+        //发送文件时携带本机IP
+        byte[] ipByte = new byte[16];
+        byte[] localIpByte = localIP.getBytes();
+        for (int i = 0; i < localIpByte.length; i++) {
+            ipByte[i] = localIpByte[i];
+        }
+        ipByte[localIpByte.length] = 0;
+        try {
+            out.write(ipByte, 0, ipByte.length);//
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         //文件名
         byte[] file = new byte[256];//定义字节数组用于存储文件名字大小
         byte[] tfile = fileToSend.getName().getBytes();
@@ -397,7 +442,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         //文件本身大小
         //
@@ -438,11 +482,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 //        chatMessage.isPb = 0;
         chatMessage.fromNick = username;
         chatMessage.type = "chatP2P";
+        //TODO 2016/3/25 9:50
+        chatMessage.chat_id = toIp;
         mDataArrays.add(chatMessage);
+        //TODO
+        mListViewAdapater = new ChatMessageAdapater(getApplicationContext(), mDataArrays);
+
         //发送开始就显示
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                lv.setAdapter(mListViewAdapater);
                 if (mListViewAdapater != null) {
                     mListViewAdapater.notifyDataSetChanged();
                 }
@@ -469,14 +519,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 out.flush();
 
             }
-
+            out.close();
+            s.close();
             //TODO
             //隐藏进度条
             chatMessage.isPb = 0;
+            mListViewAdapater = new ChatMessageAdapater(getApplicationContext(), mDataArrays);
             //发送完毕就隐藏
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    lv.setAdapter(mListViewAdapater);
                     if (mListViewAdapater != null) {
                         mListViewAdapater.notifyDataSetChanged();
                     }
@@ -503,7 +556,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 Uri uri = data.getData();
                 if (uri != null) {
                     select_file_path = FileUtils.getPath(this, uri);
-//                    pb_send.setVisibility(View.VISIBLE);//显示进度条
                     new Thread() {
                         @Override
                         public void run() {
@@ -532,10 +584,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         mDataSocket.receive(dp);
                         ChatMessage msgg = new ChatMessage();
                         ChatMessage fromXml = (ChatMessage) msgg.fromXml(new String(dp.getData()));
-                        Message msg = handler.obtainMessage();
-                        msg.obj = fromXml;
-                        msg.what = 1;
-                        handler.sendMessage(msg);
+                        //TODO
+                        if (toIp.equals(fromXml.fromIP)) {
+                            Message msg = handler.obtainMessage();
+                            msg.obj = fromXml;
+                            msg.what = 1;
+                            handler.sendMessage(msg);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -543,7 +598,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         }.start();
     }
-
 
     private void initView() {
         View_pop = LayoutInflater.from(this).inflate(R.layout.pop_menu, null);
@@ -567,21 +621,29 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setAdapter() {
         BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
-        mDataArrays = buddyDao.findP2PMsgAll();
+
+        mDataArrays = buddyDao.findMsgByChatId(toIp);//根据会话id查询数据库中单对单聊天信息
+
         mListViewAdapater = new ChatMessageAdapater(getApplicationContext(), mDataArrays);
         lv.setAdapter(mListViewAdapater);
     }
 
+
     private void receive(ChatMessage chatMessage) {
-        if (chatMessage.fromIP == toIp) {
-            chatMessage.fromAvatar = avatar;
-            chatMessage.msgType = 1;
-            BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
-            buddyDao.addP2PMsg(chatMessage);
-            mDataArrays.add(chatMessage);
-            mListViewAdapater.notifyDataSetChanged();
-            lv.setSelection(lv.getCount() - 1);
-        }
+        chatMessage.fromAvatar = avatar;
+        chatMessage.msgType = 1;
+        //TODO 2016/3/24 22:30
+        chatMessage.chat_id = chatMessage.fromIP;//接收的时候把fromIP作为会话ID
+        BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
+        buddyDao.addP2PMsg(chatMessage);
+        mDataArrays.add(chatMessage);
+        /**
+         * 再次创建Adapater对象
+         * */
+        mListViewAdapater = new ChatMessageAdapater(getApplicationContext(), mDataArrays);
+        lv.setAdapter(mListViewAdapater);
+        mListViewAdapater.notifyDataSetChanged();
+        lv.setSelection(lv.getCount() - 1);
     }
 
     private void send() {
@@ -596,6 +658,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             chatMessage.content = contString;
             chatMessage.fromNick = username;
             chatMessage.type = "chatP2P";
+            //TODO 2016/3/24 22:20
+            chatMessage.chat_id = toIp;//发送的时候把toIp作为会话id
             final String xml = chatMessage.toXml();
             new Thread() {
                 @Override
@@ -607,11 +671,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
             buddyDao.addP2PMsg(chatMessage);
             mDataArrays.add(chatMessage);
+            /**
+             * 再次创建Adapater对象
+             * */
+            mListViewAdapater = new ChatMessageAdapater(getApplicationContext(), mDataArrays);
+            lv.setAdapter(mListViewAdapater);
             mListViewAdapater.notifyDataSetChanged();
             lv.setSelection(lv.getCount() - 1);
         }
     }
-
 
     /**
      * 获得发送时间
@@ -783,5 +851,5 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             throw new RuntimeException();
         }
     }
-
 }
+

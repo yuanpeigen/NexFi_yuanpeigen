@@ -113,11 +113,8 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
                     ds.joinGroup(receiveAddress);
                     byte[] buff = new byte[1024];
                     DatagramPacket dp = new DatagramPacket(buff, buff.length, receiveAddress, 8007);
-
                     while (true) {
                         ds.receive(dp);
-
-
                         if (null != dp) {
                             //说明是聊天信息，而不是不停发送的进入消息
                             ChatMessage msgg = new ChatMessage();
@@ -143,7 +140,7 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
 
     private void initmyAvatar() {
         SharedPreferences preferences = getSharedPreferences("UserHeadIcon", Context.MODE_PRIVATE);
-        myAvatar = preferences.getInt("userhead", R.mipmap.user_head_male_1);
+        myAvatar = preferences.getInt("userhead", R.mipmap.user_head_female_3);
     }
 
     private void receive(ChatMessage chatMessage) {

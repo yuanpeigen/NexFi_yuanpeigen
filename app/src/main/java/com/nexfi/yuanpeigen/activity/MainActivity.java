@@ -5,6 +5,8 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -32,19 +34,20 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
 
     private Fragment_nearby fragment_nearby;
     private Fragment_settings fragment_settings;
-    private Handler handler;
+    private Handler handler, handler_wifiStatus;
     private Handler mHandler;
-    private boolean isExit, isDialog = true, isUserInfo, isAbout, isDialogRoom, isSettings = true;
+    private boolean isExit, isWifiStatus, isDialog = true, isUserInfo, isAbout, isDialogRoom, isSettings = true;
     private FragmentManager mFragmentManager;
     private RadioGroup myTabRg;
     private RadioButton rb_nearby, rb_settings;
-    private AlertDialog mAlertDialog;
+    private AlertDialog mAlertDialog, alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
+        isWifiStatus = isWifiConnected(this);
         Intent intent = getIntent();
         isUserInfo = intent.getBooleanExtra("isUserInfo", true);
         isAbout = intent.getBooleanExtra("isAbout", true);
@@ -54,8 +57,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
             initSettingsFragment();
         }
         isDialog = intent.getBooleanExtra("Dialog", true);
-        isDialogRoom = intent.getBooleanExtra("DialogRoom", false);
-        if (isDialog && isUserInfo && isAbout && isDialogRoom) {
+        isDialogRoom = intent.getBooleanExtra("DialogRoom", true);
+        if (isDialog && isUserInfo && isAbout && isDialogRoom && isWifiStatus) {
             initDialog();
             handler = new Handler();
             handler.postDelayed(this, 1000);
@@ -73,6 +76,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         } else {
             rb_nearby.setChecked(true);
         }
+        wifiStatus();
     }
 
 
@@ -92,13 +96,6 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         mAlertDialog.dismiss();
     }
 
-    public String intToIp(int i) {
-
-        return (i & 0xFF) + "." +
-                ((i >> 8) & 0xFF) + "." +
-                ((i >> 16) & 0xFF) + "." +
-                (i >> 24 & 0xFF);
-    }
 
     private void initNearByFragment() {
         mFragmentManager = getFragmentManager();
@@ -134,7 +131,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
             if (!isExit) {
                 isExit = true;
                 mHandler.sendEmptyMessageDelayed(0, 1500);
-                Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
                 return false;
             } else {
                 finish();
@@ -143,6 +140,40 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         return true;
     }
 
+    private void wifiStatus() {
+        if (!isWifiConnected(MainActivity.this)) {
+            LayoutInflater inflater = LayoutInflater.from(this);
+            View v = inflater.inflate(R.layout.dialog_wifi, null);
+            alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0x00000000));
+            alertDialog.show();
+            alertDialog.getWindow().setContentView(v);
+            alertDialog.setCancelable(false);
+            handler_wifiStatus = new Handler();
+            handler_wifiStatus.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    alertDialog.dismiss();
+                }
+            }, 1500);
+        }
+    }
+
+    /**
+     * 判断ＷiFi是否打开
+     */
+    public boolean isWifiConnected(Context context) {
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mWiFiNetworkInfo = mConnectivityManager
+                    .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (mWiFiNetworkInfo != null) {
+                return mWiFiNetworkInfo.isAvailable();
+            }
+        }
+        return false;
+    }
 
     public static String getTxtFileInfo(Context context) {
         try {

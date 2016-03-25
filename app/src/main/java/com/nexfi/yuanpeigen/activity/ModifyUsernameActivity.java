@@ -29,7 +29,7 @@ public class ModifyUsernameActivity extends AppCompatActivity implements View.On
         setContentView(R.layout.activity_modify_username);
         initUsername();
         initView();
-        modifyUsername.setHint(username);
+        modifyUsername.setText(username);
         setOnclicklistener();
     }
 

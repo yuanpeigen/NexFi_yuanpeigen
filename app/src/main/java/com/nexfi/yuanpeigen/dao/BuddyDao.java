@@ -43,6 +43,23 @@ public class BuddyDao {
     }
 
     /**
+     * 根据fromIP和toIP查询数据库中的消息记录
+     *
+     * @param fromIP
+     * @param toIP
+     * @return
+     */
+    public boolean findMsgByToIp(String fromIP, String toIP) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor cursor = db.query("messageFile", null, "fromIP=? and toIP=?", new String[]{fromIP, toIP}, null, null, null);
+        if (cursor.moveToNext()) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
      * 添加单聊消息到数据库
      */
     public void addP2PMsg(ChatMessage msg) {
@@ -62,7 +79,8 @@ public class BuddyDao {
         values.put("fileIcon", msg.fileIcon);
         values.put("isPb", msg.isPb);
         values.put("filePath", msg.filePath);
-        db.insert("chatMsgFilePath", null, values);
+        values.put("chat_id", msg.chat_id);
+        db.insert("messageFile", null, values);
         db.close();
     }
 
@@ -108,7 +126,7 @@ public class BuddyDao {
      */
     public void deleteP2PMsg(String fromIP) {
         SQLiteDatabase db = helper.getWritableDatabase();
-        int row = db.delete("chatMsgFilePath", "fromIP = ?",
+        int row = db.delete("messageFile", "fromIP = ?",
                 new String[]{fromIP});
         db.close();
     }
@@ -136,7 +154,7 @@ public class BuddyDao {
     //删除所有单聊聊天信息
     public void deleteP2PMsgAll() {
         SQLiteDatabase db = helper.getWritableDatabase();
-        int row = db.delete("chatMsgFilePath", null, null);
+        int row = db.delete("chatMsgFile", null, null);
         db.close();
     }
 
@@ -187,7 +205,7 @@ public class BuddyDao {
     public List<ChatMessage> findP2PMsgAll() {
 
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor cursor = db.query("chatMsgFilePath", null, null, null, null, null, null);
+        Cursor cursor = db.query("messageFile", null, null, null, null, null, null);
         List<ChatMessage> mDatas = new ArrayList<ChatMessage>();
         List<ChatMessage> mList = new ArrayList<ChatMessage>();
         while (cursor.moveToNext()) {
@@ -212,6 +230,42 @@ public class BuddyDao {
             if (!mDatas.contains(mList.get(i))) {
                 mDatas.add(mList.get(i));
             }
+        }
+        cursor.close();
+        db.close();
+        return mDatas;
+    }
+
+
+    /**
+     * 根据会话id查找对应的单对单聊天记录
+     *
+     * @param chat_id
+     * @return
+     */
+    public List<ChatMessage> findMsgByChatId(String chat_id) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor cursor = db.query("messageFile", null, "chat_id=?", new String[]{chat_id}, null, null, null);
+        List<ChatMessage> mDatas = new ArrayList<ChatMessage>();
+        while (cursor.moveToNext()) {
+            ChatMessage msg = new ChatMessage();
+            msg.fromIP = cursor.getString(cursor.getColumnIndex("fromIP"));
+            msg.fromNick = cursor.getString(cursor.getColumnIndex("fromNick"));
+            msg.type = cursor.getString(cursor.getColumnIndex("type"));
+            msg.content = cursor.getString(cursor.getColumnIndex("content"));
+            msg.fromAvatar = cursor.getInt(cursor.getColumnIndex("fromAvatar"));
+            msg.toIP = cursor.getString(cursor.getColumnIndex("toIP"));
+            msg.msgType = cursor.getInt(cursor.getColumnIndex("msgType"));
+            msg.sendTime = cursor.getString(cursor.getColumnIndex("sendTime"));
+            //TODO
+            msg.fileName = cursor.getString(cursor.getColumnIndex("fileName"));
+            msg.fileSize = cursor.getLong(cursor.getColumnIndex("fileSize"));
+            msg.fileIcon = cursor.getInt(cursor.getColumnIndex("fileIcon"));
+            msg.isPb = cursor.getInt(cursor.getColumnIndex("isPb"));
+            msg.filePath = cursor.getString(cursor.getColumnIndex("filePath"));
+            //TODO
+            msg.chat_id = cursor.getString(cursor.getColumnIndex("chat_id"));
+            mDatas.add(msg);
         }
         cursor.close();
         db.close();
@@ -257,9 +311,6 @@ public class BuddyDao {
         db.close();
         return mDatas;
     }
-
-
-    //閺屻儴顕楁稉鈧稉?--------------------------------------------------------------------------------------
 
 
     /**

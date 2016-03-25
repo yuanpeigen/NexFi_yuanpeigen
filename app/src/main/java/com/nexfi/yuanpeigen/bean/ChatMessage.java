@@ -18,4 +18,7 @@ public class ChatMessage extends ProtocalObj implements Serializable {
     public int fileIcon;//文件图标
     public int isPb;//进度条显示隐藏标记
     public String filePath;//文件路径
+    //
+    public String chat_id;
+
 }

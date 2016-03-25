@@ -28,22 +28,22 @@
 
             <ImageView
                 android:id="@+id/ImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_alignParentLeft="true"
                 android:layout_centerInParent="true"
-                android:layout_marginLeft="25dp"
+                android:layout_marginLeft="20dp"
                 android:src="@mipmap/icon_back" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:layout_marginLeft="6dp"
+                android:layout_marginLeft="2dp"
                 android:layout_toRightOf="@id/ImageView"
                 android:text="返回"
                 android:textColor="#FFF"
-                android:textSize="19sp" />
+                android:textSize="18sp" />
         </RelativeLayout>
     </RelativeLayout>
 

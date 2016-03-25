@@ -1,6 +1,8 @@
 package com.nexfi.yuanpeigen.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -17,8 +19,8 @@ import com.nexfi.yuanpeigen.util.UserInfo;
  */
 public class UsernameActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView finish;
-    private EditText username;
-
+    private EditText et_username;
+    private String username;
 
 
     @Override
@@ -26,20 +28,26 @@ public class UsernameActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_username);
         finish = (TextView) findViewById(R.id.tv_finish);
-        username = (EditText) findViewById(R.id.et_username);
+        et_username = (EditText) findViewById(R.id.et_username);
+        initUsername();
+        et_username.setText(username);
         finish.setOnClickListener(this);
     }
 
+    private void initUsername() {
+        SharedPreferences preferences = getSharedPreferences("username", Context.MODE_PRIVATE);
+        username = preferences.getString("userName", null);
+    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_finish:
-                if (!TextUtils.isEmpty(username.getText())) {
-                    UserInfo.saveUsername(UsernameActivity.this, username.getText().toString());
+                if (!TextUtils.isEmpty(et_username.getText())) {
+                    UserInfo.saveUsername(UsernameActivity.this, et_username.getText().toString());
                     Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(UsernameActivity.this, LoginActivity.class);
-                    intent.putExtra("name", username.getText().toString());
+                    intent.putExtra("name", et_username.getText().toString());
                     setResult(2, intent);
                     UsernameActivity.this.finish();
                 } else {

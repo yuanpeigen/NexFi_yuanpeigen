@@ -31,11 +31,11 @@ import com.nexfi.yuanpeigen.weight.MyGridViewAdapter;
  * Created by Mark on 2016/3/3.
  */
 public class UserinfoActivity extends AppCompatActivity implements View.OnClickListener {
-    private ImageView iv_back, iv_userheadIcon;
+    private ImageView iv_userheadIcon;
     private final String USERSEXMALE = "男";
     private final String USERSEXFEMALE = "女";
     private LinearLayout modify_userheadIcon;
-    private RelativeLayout layout_username;
+    private RelativeLayout layout_username, iv_back;
     private RadioGroup radioGroup;
     private RadioButton rb_female, rb_male;
     private View View_pop;
@@ -81,7 +81,7 @@ public class UserinfoActivity extends AppCompatActivity implements View.OnClickL
 
     private void initUserHeadIcon() {
         SharedPreferences preferences = getSharedPreferences("UserHeadIcon", Context.MODE_PRIVATE);
-        userHeadIcon = preferences.getInt("userhead", R.mipmap.user_head_female_1);
+        userHeadIcon = preferences.getInt("userhead", R.mipmap.user_head_female_3);
         iv_userheadIcon.setImageResource(userHeadIcon);
     }
 
@@ -96,7 +96,7 @@ public class UserinfoActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void initView() {
-        iv_back = (ImageView) findViewById(R.id.iv_back);
+        iv_back = (RelativeLayout) findViewById(R.id.iv_back);
         tv_modifyUsername = (TextView) findViewById(R.id.tv_modify_username);
         modify_userheadIcon = (LinearLayout) findViewById(R.id.modify_userheadIcon);
         layout_username = (RelativeLayout) findViewById(R.id.layout_username);
