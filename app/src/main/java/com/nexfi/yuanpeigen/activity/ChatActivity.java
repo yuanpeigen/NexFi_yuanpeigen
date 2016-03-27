@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -53,8 +54,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by Mark on 2016/2/17.
@@ -79,10 +78,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private String fileName;
     private long fileSize;
     private String select_file_path = "";//发送端选择的文件的路径
-
     private String rece_file_path = "";//接收端文件的保存路径
 
-    ServerSocket ss = null;
+    int dynamicClientPort = 0;
+    int dynamicServerPort = 0;
+
 
     /**
      * 数据
@@ -103,7 +103,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initmyAvatar() {
         SharedPreferences preferences = getSharedPreferences("UserHeadIcon", Context.MODE_PRIVATE);
-        myAvatar = preferences.getInt("userhead", R.mipmap.user_head_male_1);
+        myAvatar = preferences.getInt("userhead", R.mipmap.user_head_female_3);
     }
 
     @Override
@@ -116,14 +116,49 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         avatar = intent.getIntExtra("3", R.mipmap.user_head_female_1);
         SharedPreferences preferences = getSharedPreferences("IP", Context.MODE_PRIVATE);
         localIP = preferences.getString("useIP", null);
+
+        dynamicClientPort = 10000 + Integer.parseInt(FileUtils.splitIP(localIP));
+        dynamicServerPort = 10000 + Integer.parseInt(FileUtils.splitIP(toIp));
+
         initView();
         initReUDP();
         startServer();
         setAdapter();
         setOnClickListener();
         initmyAvatar();
-
+        this.getContentResolver().registerContentObserver(
+                Uri.parse("content://www.file_send"), true,
+                new Myobserve(new Handler()));
     }
+
+
+    private class Myobserve extends ContentObserver {
+
+        public Myobserve(Handler handler) {
+            super(handler);
+        }
+
+
+        @Override
+        public void onChange(boolean selfChange) {
+
+            new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setAdapter();
+                        }
+                    });
+                }
+            }.start();
+            super.onChange(selfChange);
+        }
+    }
+
+
 
     /**
      * 选择本地文件
@@ -149,22 +184,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run() {
                 super.run();
-
-                TcpFenDuanThread longRunningTaskFuture = null;
-                //使用线程池
-                ExecutorService threadpool = Executors.newFixedThreadPool(10);
+                ServerSocket serversock = null;  //监听端口
                 try {
-
+                    serversock = new ServerSocket(dynamicServerPort);
                     while (true) {
-                        ss = new ServerSocket(10066);
-                        threadpool.execute(new TcpFenDuanThread(ss.accept()));
-                        ss.close();
+                        Socket sock = serversock.accept();            //循环等待客户端连接
+                        new Thread(new TcpFenDuanThread(sock)).start(); //当成功连接客户端后开启新线程接收文件
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }.start();
+
+
     }
 
     //分段接收线程
@@ -179,16 +212,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void run() {
             System.out.println(s.getInetAddress().getHostAddress() + "-----ip");
-//            Message msg = handler.obtainMessage();
-//            msg.what = 1;
-//            handler.sendEmptyMessage(1);
-
             try {
                 in = s.getInputStream();
-
-                //TODO----------------------------------------------------------
                 byte[] local = new byte[16];
-                in.read(local);//鎺ユ敹鏂囦欢鍚?
+                in.read(local);
                 String local_ip = new String(local).trim();//ip
                 Log.e("TAG", local_ip + "=========================local_ip--------------========================================");
 
@@ -201,23 +228,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     String filename = new String(filename2, 0, leng);
                     Log.e("TAG", filename + "=========================filename2--------------========================================");
 
-
-//                byte[] filename = new byte[256];
-//                in.read(filename);//鎺ユ敹鏂囦欢鍚?
                     String file_name = new String(filename).trim();//文件名
-//                File fileout = new File(Environment.getExternalStorageDirectory().getPath() + "/" + file_name);//鎺ユ敹鍒扮殑鏂囦欢鐨勫瓨鍌ㄨ矾寰?
                     File fileDir = new File(Environment.getExternalStorageDirectory().getPath() + "/NexFi");
                     if (!fileDir.exists()) {
                         fileDir.mkdirs();
                     }
                     rece_file_path = fileDir + "/" + file_name;
-                    File fileout = new File(rece_file_path);//鎺ユ敹鍒扮殑鏂囦欢鐨勫瓨鍌ㄨ矾寰?
+                    File fileout = new File(rece_file_path);
                     FileOutputStream fos = new FileOutputStream(fileout);
 
-                    byte[] filesize = new byte[64];//瀛樺偍鏂囦欢澶у皬鐨勬暟瀛楃殑瀛楄妭鏁扮粍
+                    byte[] filesize = new byte[64];
                     int b = 0;
                     while (b < filesize.length) {
-                        b += in.read(filesize, b, filesize.length - b);//鏂囦欢澶у皬鐨勫疄闄呭瓧鑺傛暟
+                        b += in.read(filesize, b, filesize.length - b);
                     }
                     int ends = 0;
                     for (int i = 0; i < filesize.length; i++) {
@@ -385,12 +408,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public void sendFenDuanFile(String path) {
         Socket s = null;
         OutputStream out = null;
-
         try {
-            if (null == s) {
-                s = new Socket(toIp, 10066);
-                Log.e("TAG", toIp + "-------------------------------------------------===============================================");
-            }
+            s = new Socket(toIp, dynamicClientPort);
             s.setSoTimeout(5000);
             out = s.getOutputStream();
         } catch (UnknownHostException e) {
@@ -517,7 +536,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     e.printStackTrace();
                 }
                 out.flush();
-
             }
             out.close();
             s.close();

@@ -82,6 +82,9 @@ public class BuddyDao {
         values.put("chat_id", msg.chat_id);
         db.insert("messageFile", null, values);
         db.close();
+        context.getContentResolver().notifyChange(
+                Uri.parse("content://www.file_send"), null);
+
     }
 
 

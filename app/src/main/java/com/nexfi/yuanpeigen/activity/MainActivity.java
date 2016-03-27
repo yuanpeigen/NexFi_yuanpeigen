@@ -131,7 +131,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
             if (!isExit) {
                 isExit = true;
                 mHandler.sendEmptyMessageDelayed(0, 1500);
-                Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "再按一次退出NexFi", Toast.LENGTH_SHORT).show();
                 return false;
             } else {
                 finish();

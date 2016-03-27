@@ -1,27 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/nexfi/yuanpeigen/activity/ChatActivity.java" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/nexfi/yuanpeigen/bean/ChatMsgEntity.java" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/nexfi/yuanpeigen/bean/Userinfo.java" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/anim/fade.xml" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/anim/layout_grid_inverse_fade.xml" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/item_recevied_file.xml" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/item_recevied_file_room.xml" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/apk.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/bmp.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/chat_bg_default.jpg" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/doc.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/gif.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/jpg.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/music.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/pdf.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/png.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ppt.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/txt.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/video.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/xls.png" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/zip.png" charset="GBK" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

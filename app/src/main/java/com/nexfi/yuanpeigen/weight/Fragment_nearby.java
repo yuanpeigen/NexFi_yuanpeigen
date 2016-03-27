@@ -3,10 +3,13 @@ package com.nexfi.yuanpeigen.weight;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,7 +110,42 @@ public class Fragment_nearby extends Fragment {
                 return true;
             }
         });
+
+        getActivity().getContentResolver().registerContentObserver(
+                Uri.parse("content://www.nexfi.com"), true,
+                new Myobserve(new Handler()));
+
         return v;
+    }
+
+
+    private class Myobserve extends ContentObserver {
+
+        public Myobserve(Handler handler) {
+            super(handler);
+        }
+
+
+        @Override
+        public void onChange(boolean selfChange) {
+
+            new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    BuddyDao buddyDao = new BuddyDao(getActivity());
+                    mDataArrays = buddyDao.findAll();//查找所有用户
+                    newAdapter = new MyExpandableListViewAdapter_new(getActivity(), mDataArrays);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ex_new.setAdapter(newAdapter);
+                        }
+                    });
+                }
+            }.start();
+            super.onChange(selfChange);
+        }
     }
 
 

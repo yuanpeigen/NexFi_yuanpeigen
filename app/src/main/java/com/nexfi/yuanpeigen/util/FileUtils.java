@@ -14,11 +14,11 @@ public class FileUtils {
     public static String getPath(Context context, Uri uri) {
 
         if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = { "_data" };
+            String[] projection = {"_data"};
             Cursor cursor = null;
 
             try {
-                cursor = context.getContentResolver().query(uri, projection,null, null, null);
+                cursor = context.getContentResolver().query(uri, projection, null, null, null);
                 int column_index = cursor.getColumnIndexOrThrow("_data");
                 if (cursor.moveToFirst()) {
                     return cursor.getString(column_index);
@@ -26,18 +26,16 @@ public class FileUtils {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
         }
         return null;
     }
 
 
-
     /**
      * 获取文件扩展名
+     *
      * @param filename
      * @return
      */
@@ -45,7 +43,7 @@ public class FileUtils {
     public static String getExtensionName(String filename) {
         if ((filename != null) && (filename.length() > 0)) {
             int dot = filename.lastIndexOf('.');
-            if ((dot >-1) && (dot < (filename.length() - 1))) {
+            if ((dot > -1) && (dot < (filename.length() - 1))) {
                 return filename.substring(dot + 1);
             }
         }
@@ -53,21 +51,21 @@ public class FileUtils {
     }
 
 
-
     /**
      * 判断文件夹中是否有同名文件
-     * @param path	文件夹路径
-     * @param fileName	文件名
+     *
+     * @param path     文件夹路径
+     * @param fileName 文件名
      * @return
      */
-    public static int sameFileCount(String path,String fileName){
+    public static int sameFileCount(String path, String fileName) {
         File dir = new File(path); //path是文件夹路经
-        int count=0;//记录同名文件的个数
+        int count = 0;//记录同名文件的个数
         File[] listOfFiles = dir.listFiles();
-        if(null!=listOfFiles){
-            for(int i=0; i< listOfFiles.length;i++){
-                if(listOfFiles[i].isFile()){
-                    if(listOfFiles[i].getName().equals(fileName)){
+        if (null != listOfFiles) {
+            for (int i = 0; i < listOfFiles.length; i++) {
+                if (listOfFiles[i].isFile()) {
+                    if (listOfFiles[i].getName().equals(fileName)) {
                         count++;
                     }
                 }
@@ -77,9 +75,9 @@ public class FileUtils {
     }
 
 
-
     /**
      * 根据文件扩展名选择文件的打开方式
+     *
      * @param filePath
      * @return
      */
@@ -251,4 +249,17 @@ public class FileUtils {
         intent.setDataAndType(uri, "application/pdf");
         return intent;
     }
+
+
+    /**
+     * 获取一个IP地址的最后一段
+     *
+     * @param ip
+     * @return
+     */
+    public static String splitIP(String ip) {
+        String[] splitIps = ip.split("\\.");
+        return splitIps[splitIps.length - 1];
+    }
+
 }
