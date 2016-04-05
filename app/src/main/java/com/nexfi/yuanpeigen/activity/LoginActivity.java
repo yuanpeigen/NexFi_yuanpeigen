@@ -243,7 +243,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             user.avatar = avatar;
             user.type = "online";
             String xml = user.toXml();
-            SocketUtils.startSendThread(xml);
+            SocketUtils.startSendThread(xml);//发送上线通知
             UserInfo.setConfigurationInformation(LoginActivity.this);
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();

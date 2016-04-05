@@ -12,6 +12,7 @@ public class ProtocalObj {
     public Object fromXml(String xml) {
         XStream x = new XStream();
         x.alias(this.getClass().getSimpleName(), this.getClass());
-        return x.fromXML(xml);
+        Object obj=x.fromXML(xml);
+        return obj;
     }
 }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.TextView;
 
 import com.nexfi.yuanpeigen.nexfi.R;
 
@@ -13,6 +14,7 @@ import com.nexfi.yuanpeigen.nexfi.R;
  */
 public class MyExpandableListViewAdapter_online extends BaseExpandableListAdapter {
     private LayoutInflater inflater;
+    private String[] category = new String[]{"在线好友"};
 
     public MyExpandableListViewAdapter_online(Context context) {
         inflater = LayoutInflater.from(context);
@@ -25,7 +27,7 @@ public class MyExpandableListViewAdapter_online extends BaseExpandableListAdapte
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 0;
+        return 10;
     }
 
     @Override
@@ -56,6 +58,8 @@ public class MyExpandableListViewAdapter_online extends BaseExpandableListAdapte
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         View v = inflater.inflate(R.layout.online_group, null);
+        TextView tv = (TextView) v.findViewById(R.id.tv_group);
+        tv.setText(category[0]);
         return v;
     }
 

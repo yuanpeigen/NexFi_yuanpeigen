@@ -1,6 +1,7 @@
 package com.nexfi.yuanpeigen.weight;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,32 +32,33 @@ public class MyExpandableListViewAdapter_new extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
+        Log.e("TAG",userinfos.size()+"--------------------------------userinfos--------------------------------");
         return userinfos.size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return groupPosition;
+        return 0;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return childPosition;
+        return userinfos.get(childPosition);
     }
 
     @Override
     public long getGroupId(int groupPosition) {
-        return 0;
+        return groupPosition;
     }
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return 0;
+        return childPosition;
     }
 
     @Override
     public boolean hasStableIds() {
-        return false;
+        return true;
     }
 
     @Override

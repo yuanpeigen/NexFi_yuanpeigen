@@ -25,9 +25,9 @@
             android:id="@+id/tv_finish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
-            android:layout_marginLeft="70dp"
-            android:layout_toRightOf="@id/textView"
+            android:layout_marginRight="20dp"
             android:text="完成"
             android:textColor="#FFF"
             android:textSize="17sp" />
@@ -168,7 +168,7 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/btn_finish"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="25dp"
+                android:layout_marginBottom="20dp"
                 android:text="Welcome to NexFi"
                 android:textColor="@color/textNormol" />
 

@@ -5,17 +5,17 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="90dp"
         android:background="#EBEBEB">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/tv_group"
             android:layout_alignParentLeft="true"
             android:layout_centerInParent="true"
             android:layout_marginLeft="35dp"
             android:gravity="center"
-            android:text="离线好友"
             android:textColor="#575757"
             android:textSize="18sp" />
     </RelativeLayout>

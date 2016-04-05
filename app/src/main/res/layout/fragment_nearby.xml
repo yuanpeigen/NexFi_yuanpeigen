@@ -6,75 +6,71 @@
     android:background="#FFFFFF"
     tools:context=".MainActivity">
 
-    <LinearLayout
+
+    <RelativeLayout
+        android:id="@+id/layout_topRoom"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentTop="true"
+        android:background="@mipmap/icon_title">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="附近"
+            android:textColor="#FFF"
+            android:textSize="22sp" />
+
+        <ImageView
+            android:id="@+id/iv_add"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="20dp"
+            android:src="@mipmap/icon_popmenu" />
+    </RelativeLayout>
+
+
+    <ExpandableListView
+        android:id="@+id/ex_userlist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_below="@+id/layout_topRoom"
+        android:layout_marginBottom="60dp"
+        android:childDivider="@color/expandableItem" />
 
-        <RelativeLayout
-            android:id="@+id/layout_topRoom"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_alignParentTop="true"
-            android:background="@mipmap/icon_title">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="附近"
-                android:textColor="#FFF"
-                android:textSize="22sp" />
-
-            <ImageView
-                android:id="@+id/iv_add"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerInParent="true"
-                android:layout_marginRight="20dp"
-                android:src="@mipmap/icon_popmenu" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
+    <!--
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
 
                 <ExpandableListView
                     android:id="@+id/ex_online"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
                     android:childDivider="@color/expandableItem" />
-            </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp">
 
                 <ExpandableListView
                     android:id="@+id/ex_offline"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
                     android:childDivider="@color/expandableItem" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp">
 
                 <ExpandableListView
                     android:id="@+id/ex_new"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="60dp"
+                    android:layout_weight="1"
                     android:childDivider="@color/expandableItem" />
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
+
+            </LinearLayout>-->
 </RelativeLayout>

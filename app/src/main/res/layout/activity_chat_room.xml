@@ -84,11 +84,13 @@
 
             <EditText
                 android:id="@+id/et_chatRoom"
-                android:layout_width="260dp"
+                android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_centerInParent="true"
+                android:layout_marginLeft="2dp"
                 android:layout_marginRight="2dp"
                 android:layout_toLeftOf="@+id/btn_sendMsgRoom"
+                android:layout_toRightOf="@+id/iv_addRoom"
                 android:background="@drawable/shape_chat"
                 android:hint="消息内容..."
                 android:paddingLeft="5dp"

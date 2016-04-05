@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -33,26 +32,19 @@ import android.widget.Toast;
 import com.nexfi.yuanpeigen.bean.ChatMessage;
 import com.nexfi.yuanpeigen.dao.BuddyDao;
 import com.nexfi.yuanpeigen.nexfi.R;
+import com.nexfi.yuanpeigen.util.FileTransferUtils;
 import com.nexfi.yuanpeigen.util.FileUtils;
 import com.nexfi.yuanpeigen.util.SocketUtils;
 import com.nexfi.yuanpeigen.weight.ChatMessageAdapater;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -116,13 +108,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         avatar = intent.getIntExtra("3", R.mipmap.user_head_female_1);
         SharedPreferences preferences = getSharedPreferences("IP", Context.MODE_PRIVATE);
         localIP = preferences.getString("useIP", null);
-
-        dynamicClientPort = 10000 + Integer.parseInt(FileUtils.splitIP(localIP));
-        dynamicServerPort = 10000 + Integer.parseInt(FileUtils.splitIP(toIp));
-
+        if (localIP != null && toIp != null) {
+            dynamicClientPort = 10000 + Integer.parseInt(FileUtils.splitIP(localIP));
+            dynamicServerPort = 10000 + Integer.parseInt(FileUtils.splitIP(toIp));
+            SocketUtils.initReUDP(handler, toIp);//初始化UDP接收端
+            startServer();//接收端
+        }
         initView();
-        initReUDP();
-        startServer();
+
+//        FileTransferUtils.startServer(dynamicServerPort,this,toIp,avatar,lv,mDataArrays,mListViewAdapater);//开启文件接收端
+
         setAdapter();
         setOnClickListener();
         initmyAvatar();
@@ -159,24 +154,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
-    /**
-     * 选择本地文件
-     */
-    private void selectFileFromLocal() {
-        Intent intent = null;
-        if (Build.VERSION.SDK_INT < 19) {
-            intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("*/*");
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-        } else {
-            intent = new Intent(
-                    Intent.ACTION_PICK,
-                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        }
-        startActivityForResult(intent, REQUEST_CODE_SELECT_FILE);
-    }
-
     //开启接收端
     private void startServer() {
 
@@ -189,15 +166,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     serversock = new ServerSocket(dynamicServerPort);
                     while (true) {
                         Socket sock = serversock.accept();            //循环等待客户端连接
-                        new Thread(new TcpFenDuanThread(sock)).start(); //当成功连接客户端后开启新线程接收文件
+//                        new Thread(new TcpFenDuanThread(sock,ChatActivity.this,toIp,avatar,lv,mDataArrays)).start(); //当成功连接客户端后开启新线程接收文件
+                        new Thread(new TcpFenDuanThread(sock)).start();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }.start();
-
-
     }
 
     //分段接收线程
@@ -217,7 +193,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 byte[] local = new byte[16];
                 in.read(local);
                 String local_ip = new String(local).trim();//ip
-                Log.e("TAG", local_ip + "=========================local_ip--------------========================================");
 
                 if (toIp.equals(local_ip)) {
                     byte[] filename2 = new byte[256];//
@@ -226,7 +201,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         leng += in.read(filename2, leng, filename2.length - leng);//
                     }
                     String filename = new String(filename2, 0, leng);
-                    Log.e("TAG", filename + "=========================filename2--------------========================================");
 
                     String file_name = new String(filename).trim();//文件名
                     File fileDir = new File(Environment.getExternalStorageDirectory().getPath() + "/NexFi");
@@ -259,7 +233,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     //设置文件接收路径
                     chatMessage.filePath = rece_file_path;
                     //设置文件图标
-                    setFileIcon(chatMessage, extensionName);
+                    FileUtils.setFileIcon(chatMessage, extensionName);
                     //文件大小
                     final int finalTa = ta;
                     chatMessage.isPb = 1;
@@ -276,7 +250,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     chatMessage.fileName = file_name;
                     chatMessage.fileSize = finalTa;
-                    chatMessage.sendTime = getDateNow();
+                    chatMessage.sendTime = FileUtils.getDateNow();
                     //TODO 2016/3/25 10:00
                     chatMessage.chat_id = local_ip;
                     mDataArrays.add(chatMessage);
@@ -346,224 +320,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
                     buddyDao.addP2PMsg(chatMessage);
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-
-
-    /**
-     * 根据文件扩展名设置文件图标
-     *
-     * @param chatMessage
-     * @param extensionName
-     */
-    public void setFileIcon(ChatMessage chatMessage, String extensionName) {
-        if (null != extensionName) {
-            if ("txt".equals(extensionName)) {
-                chatMessage.fileIcon = (R.mipmap.txt);
-            } else if (extensionName.contains("doc")) {
-                chatMessage.fileIcon = (R.mipmap.doc);
-            } else if ("xls".equals(extensionName)) {
-                //excel
-                chatMessage.fileIcon = (R.mipmap.xls);
-            } else if (("ppt").equals(extensionName)) {
-                chatMessage.fileIcon = (R.mipmap.ppt);
-            } else if ("pdf".equals(extensionName)) {
-                chatMessage.fileIcon = (R.mipmap.pdf);
-            } else if ("jpg".equals(extensionName)) {
-                chatMessage.fileIcon = (R.mipmap.jpg);
-            } else if ("jpg".equals(extensionName)) {
-                chatMessage.fileIcon = (R.mipmap.jpeg);
-            } else if ("png".equals(extensionName)) {
-                chatMessage.fileIcon = (R.mipmap.png);
-            } else if ("bmp".equals(extensionName)) {
-                chatMessage.fileIcon = (R.mipmap.bmp);
-            } else if ("gif".equals(extensionName)) {
-                chatMessage.fileIcon = (R.mipmap.gif);
-            } else if ("mp3".equals(extensionName)) {
-                //mp3
-                chatMessage.fileIcon = (R.mipmap.mp3);
-            } else if ("apk".equals(extensionName)) {
-                //apk
-                chatMessage.fileIcon = (R.mipmap.apk);
-            } else if ("zip".equals(extensionName)) {
-                chatMessage.fileIcon = (R.mipmap.zip);
-            } else if (("rar".equals(extensionName))) {
-                chatMessage.fileIcon = (R.mipmap.rar);
-            } else {//默认图标
-                chatMessage.fileIcon = (R.mipmap.default_icon);
-            }
-        }
-    }
-
-
-    /**
-     * 分段发送文件
-     *
-     * @param path
-     */
-    public void sendFenDuanFile(String path) {
-        Socket s = null;
-        OutputStream out = null;
-        try {
-            s = new Socket(toIp, dynamicClientPort);
-            s.setSoTimeout(5000);
-            out = s.getOutputStream();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        final File fileToSend = new File(path);
-
-        fileSize = fileToSend.length();
-        fileName = fileToSend.getName();
-        String extensionName = FileUtils.getExtensionName(fileName);
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.isPb = 1;//让进度条显示
-        if (fileName.length() > 23) {
-            fileName = fileName.substring(0, 23) + "\n" + fileName.substring(23);
-        }
-        chatMessage.fileName = fileName;
-        chatMessage.fileSize = fileSize;
-        chatMessage.filePath = path;
-
-        //设置文件图标
-        setFileIcon(chatMessage, extensionName);
-
-        //TODO 2016.3.24  14:40
-        //发送文件时携带本机IP
-        byte[] ipByte = new byte[16];
-        byte[] localIpByte = localIP.getBytes();
-        for (int i = 0; i < localIpByte.length; i++) {
-            ipByte[i] = localIpByte[i];
-        }
-        ipByte[localIpByte.length] = 0;
-        try {
-            out.write(ipByte, 0, ipByte.length);//
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        //文件名
-        byte[] file = new byte[256];//定义字节数组用于存储文件名字大小
-        byte[] tfile = fileToSend.getName().getBytes();
-        for (int i = 0; i < tfile.length; i++) {
-            file[i] = tfile[i];
-        }
-        file[tfile.length] = 0;
-        try {
-            out.write(file, 0, file.length);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //文件本身大小
-        //
-        byte[] size = new byte[64];
-        byte[] tsize = ("" + fileToSend.length()).getBytes();
-
-        for (int i = 0; i < tsize.length; i++) {
-            size[i] = tsize[i];
-        }
-
-        size[tsize.length] = 0;
-        try {
-            out.write(size, 0, size.length);//灏嗘枃浠跺ぇ灏忎紶鍒版帴鏀剁
-            //TODO
-//            pb_send.setMax((int) fileToSend.length());//设置进度条的最大值========璁剧疆鏈€澶у€?
-//            pb_send.setVisibility(View.VISIBLE);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //读取文件的输入流
-        FileInputStream fis = null;
-        byte[] buf = new byte[1024 * 1024];
-        try {
-            fis = new FileInputStream(fileToSend);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        int readsize = 0;
-        int prog = 0;
-        //TODO
-        chatMessage.fromAvatar = myAvatar;
-        chatMessage.msgType = 2;
-        chatMessage.toIP = toIp;
-        chatMessage.fromIP = localIP;
-        chatMessage.sendTime = getDateNow();
-//        chatMessage.isPb = 0;
-        chatMessage.fromNick = username;
-        chatMessage.type = "chatP2P";
-        //TODO 2016/3/25 9:50
-        chatMessage.chat_id = toIp;
-        mDataArrays.add(chatMessage);
-        //TODO
-        mListViewAdapater = new ChatMessageAdapater(getApplicationContext(), mDataArrays);
-
-        //发送开始就显示
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                lv.setAdapter(mListViewAdapater);
-                if (mListViewAdapater != null) {
-                    mListViewAdapater.notifyDataSetChanged();
-                }
-                if (mDataArrays.size() > 0) {
-                    lv.setSelection(lv.getCount() - 1);
-                }
-
-            }
-        });
-        try {
-            while ((readsize = fis.read(buf, 0, buf.length)) > 0) {
-
-                out.write(buf, 0, readsize);
-                //TODO
-                prog += readsize;
-                Log.e("TAG", readsize + "-------------------------------------------------===============================================");
-//                pb_send.setProgress(prog);//更新进度条进度
-                //等待一会
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                out.flush();
-            }
-            out.close();
-            s.close();
-            //TODO
-            //隐藏进度条
-            chatMessage.isPb = 0;
-            mListViewAdapater = new ChatMessageAdapater(getApplicationContext(), mDataArrays);
-            //发送完毕就隐藏
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    lv.setAdapter(mListViewAdapater);
-                    if (mListViewAdapater != null) {
-                        mListViewAdapater.notifyDataSetChanged();
-                    }
-                    if (mDataArrays.size() > 0) {
-                        lv.setSelection(lv.getCount() - 1);
-                    }
-
-                }
-            });
-
-            BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
-            buddyDao.addP2PMsg(chatMessage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//
+//
 
 
     @Override
@@ -574,47 +337,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 Uri uri = data.getData();
                 if (uri != null) {
                     select_file_path = FileUtils.getPath(this, uri);
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            super.run();
-                            sendFenDuanFile(select_file_path);
-                        }
-                    }.start();
+                    FileTransferUtils.sendFenDuanFile(select_file_path, ChatActivity.this, username, myAvatar, toIp, localIP, dynamicClientPort, lv, mDataArrays);
                 }
             }
         }
-    }
-
-
-    private void initReUDP() {
-        new Thread() {
-            public void run() {
-                try {
-                    byte[] buf = new byte[1024];
-                    DatagramPacket dp = new DatagramPacket(buf, buf.length);
-                    if (mDataSocket == null) {
-                        mDataSocket = new DatagramSocket(null);
-                        mDataSocket.setReuseAddress(true);
-                        mDataSocket.bind(new InetSocketAddress(10005));
-                    }
-                    while (true) {
-                        mDataSocket.receive(dp);
-                        ChatMessage msgg = new ChatMessage();
-                        ChatMessage fromXml = (ChatMessage) msgg.fromXml(new String(dp.getData()));
-                        //TODO
-                        if (toIp.equals(fromXml.fromIP)) {
-                            Message msg = handler.obtainMessage();
-                            msg.obj = fromXml;
-                            msg.what = 1;
-                            handler.sendMessage(msg);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
     }
 
     private void initView() {
@@ -639,9 +365,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setAdapter() {
         BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
-
-        mDataArrays = buddyDao.findMsgByChatId(toIp);//根据会话id查询数据库中单对单聊天信息
-
+        if (toIp != null) {
+            mDataArrays = buddyDao.findMsgByChatId(toIp);//根据会话id查询数据库中单对单聊天信息
+        }
         mListViewAdapater = new ChatMessageAdapater(getApplicationContext(), mDataArrays);
         lv.setAdapter(mListViewAdapater);
     }
@@ -672,20 +398,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             chatMessage.msgType = 0;
             chatMessage.toIP = toIp;
             chatMessage.fromIP = localIP;
-            chatMessage.sendTime = getDateNow();
+            chatMessage.sendTime = FileUtils.getDateNow();
             chatMessage.content = contString;
             chatMessage.fromNick = username;
             chatMessage.type = "chatP2P";
             //TODO 2016/3/24 22:20
             chatMessage.chat_id = toIp;//发送的时候把toIp作为会话id
             final String xml = chatMessage.toXml();
-            new Thread() {
-                @Override
-                public void run() {
-                    super.run();
-                    SocketUtils.sendUDP(toIp, xml);
-                }
-            }.start();
+            SocketUtils.sendUDP(toIp, xml);//发送单播
             BuddyDao buddyDao = new BuddyDao(ChatActivity.this);
             buddyDao.addP2PMsg(chatMessage);
             mDataArrays.add(chatMessage);
@@ -699,19 +419,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /**
-     * 获得发送时间
-     */
-    private String getDateNow() {
-        SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss");
-        SimpleDateFormat hour = new SimpleDateFormat("HH");
-        String date = hour.format(new Date());
-        int num = Integer.parseInt(date);
-        if (num >= 12) {
-            return "下午" + " " + format.format(new Date());
-        }
-        return "上午" + " " + format.format(new Date());
-    }
 
     private void setOnClickListener() {
         iv.setOnClickListener(this);
@@ -772,10 +479,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 /**
                  * 发送文件
                  * */
-                selectFileFromLocal();
+                FileTransferUtils.selectFileFromLocal(this);
                 break;
             case R.id.iv_pic:
-                selectFileFromLocal();
+                FileTransferUtils.selectFileFromLocal(this);
                 break;
             case R.id.btn_sendMsg:
                 send();

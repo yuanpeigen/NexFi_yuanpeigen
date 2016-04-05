@@ -8,7 +8,9 @@
         android:layout_height="100dp"
         android:background="#EBEBEB">
 
+
         <TextView
+            android:id="@+id/tv_parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -18,5 +20,6 @@
             android:text="附近的人"
             android:textColor="#575757"
             android:textSize="18sp" />
+
     </RelativeLayout>
 </RelativeLayout>

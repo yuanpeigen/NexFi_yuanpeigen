@@ -73,6 +73,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
+            android:name="com.nexfi.yuanpeigen.activity.OpenAdhocActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
             android:name="com.nexfi.yuanpeigen.activity.StartActivity"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleTop"

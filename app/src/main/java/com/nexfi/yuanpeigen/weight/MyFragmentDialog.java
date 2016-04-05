@@ -3,6 +3,7 @@ package com.nexfi.yuanpeigen.weight;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nexfi.yuanpeigen.activity.OpenAdhocActivity;
 import com.nexfi.yuanpeigen.nexfi.R;
 
 import java.io.DataOutputStream;
@@ -26,13 +28,12 @@ public class MyFragmentDialog extends DialogFragment {
     private AlertDialog alertDialog;
     private boolean isRoot;
 
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.net_dialog, null);
+        final View view = inflater.inflate(R.layout.net_dialog, null);
         tv_adhoc = (TextView) view.findViewById(R.id.tv_Adhoc);
         tv_wifi = (TextView) view.findViewById(R.id.tv_WiFi);
         tv_wifi.setOnClickListener(new View.OnClickListener() {
@@ -42,6 +43,7 @@ public class MyFragmentDialog extends DialogFragment {
                     Toast.makeText(getActivity(), "WiFi已开启", Toast.LENGTH_SHORT).show();
                 } else {
                     wifiManager.setWifiEnabled(true);
+                    Toast.makeText(getActivity(), "WiFi开启成功", Toast.LENGTH_SHORT).show();
                 }
                 alertDialog.dismiss();
             }
@@ -53,9 +55,11 @@ public class MyFragmentDialog extends DialogFragment {
                 if (isRoot()) {
                     isRoot = upgradeRootPermission(getActivity().getPackageCodePath());
                     if (isRoot) {
-                        Toast.makeText(getActivity(), "NexFi开启成功", Toast.LENGTH_SHORT).show();
+                        wifiManager.setWifiEnabled(false);
+                        startActivity(new Intent(getActivity(), OpenAdhocActivity.class));
+                        getActivity().finish();
                     } else {
-                        Toast.makeText(getActivity(), "请重新授权", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "请重新授权Root权限", Toast.LENGTH_SHORT).show();
                     }
                     alertDialog.dismiss();
                 } else {

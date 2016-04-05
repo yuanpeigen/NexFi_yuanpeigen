@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.nexfi.yuanpeigen.bean.ChatMessage;
 import com.nexfi.yuanpeigen.dao.BuddyDao;
 import com.nexfi.yuanpeigen.nexfi.R;
+import com.nexfi.yuanpeigen.util.FileUtils;
 import com.nexfi.yuanpeigen.util.SocketUtils;
 import com.nexfi.yuanpeigen.weight.ChatRoomMessageAdapater;
 
@@ -69,73 +70,52 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
-        initRece();
+        SharedPreferences preferences2 = getSharedPreferences("username", Context.MODE_PRIVATE);
+        username = preferences2.getString("userName", null);
+        localIP=SocketUtils.getLocalIP(getApplicationContext());
+        SocketUtils.initReceMul(handler,localIP);
         initView();
         setOnClickListener();
         setAdapter();
         initmyAvatar();
-//        SharedPreferences preferences = getSharedPreferences("IP", Context.MODE_PRIVATE);
-//        localIP = preferences.getString("useIP", null);
-        SharedPreferences preferences2 = getSharedPreferences("username", Context.MODE_PRIVATE);
-        username = preferences2.getString("userName", null);
-        int ipAddress = getIpAddress();
-        localIP = intToIp(ipAddress);
-    }
-
-    private int getIpAddress() {
-        //获取wifi服务
-        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        //判断wifi是否开启
-        if (!wifiManager.isWifiEnabled()) {
-            wifiManager.setWifiEnabled(true);
-        }
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        return wifiInfo.getIpAddress();
-    }
-
-    public String intToIp(int i) {
-
-        return (i & 0xFF) + "." +
-                ((i >> 8) & 0xFF) + "." +
-                ((i >> 16) & 0xFF) + "." +
-                (i >> 24 & 0xFF);
-    }
-
-    /**
-     * 接收多播
-     */
-    private void initRece() {
-        new Thread() {
-            public void run() {
-                try {
-                    MulticastSocket ds = new MulticastSocket(8007);
-                    InetAddress receiveAddress = InetAddress.getByName("224.0.0.110");
-                    ds.joinGroup(receiveAddress);
-                    byte[] buff = new byte[1024];
-                    DatagramPacket dp = new DatagramPacket(buff, buff.length, receiveAddress, 8007);
-                    while (true) {
-                        ds.receive(dp);
-                        if (null != dp) {
-                            //说明是聊天信息，而不是不停发送的进入消息
-                            ChatMessage msgg = new ChatMessage();
-                            ChatMessage fromXml = (ChatMessage) msgg.fromXml(new String(dp.getData()));
-                            if (!localIP.equals(fromXml.fromIP)) {
-                                Message msg = handler.obtainMessage();
-                                msg.obj = fromXml;
-                                msg.what = 1;
-                                handler.sendMessage(msg);
-                            }
-                        }
-                        System.out.println(new String(dp.getData()));
-                    }
-                } catch (Exception e) {
-                    // TODO: handle exception
-                    e.printStackTrace();
-                }
-            }
-        }.start();
 
     }
+
+//    /**
+//     * 接收UDP多播
+//     */
+//    private void initReceMul() {
+//        new Thread() {
+//            public void run() {
+//                try {
+//                    MulticastSocket ds = new MulticastSocket(8007);
+//                    InetAddress receiveAddress = InetAddress.getByName("224.0.0.110");
+//                    ds.joinGroup(receiveAddress);
+//                    byte[] buff = new byte[1024];
+//                    DatagramPacket dp = new DatagramPacket(buff, buff.length, receiveAddress, 8007);
+//                    while (true) {
+//                        ds.receive(dp);
+//                        if (null != dp) {
+//                            //说明是聊天信息，而不是不停发送的进入消息
+//                            ChatMessage msgg = new ChatMessage();
+//                            ChatMessage fromXml = (ChatMessage) msgg.fromXml(new String(dp.getData()));
+//                            if (!localIP.equals(fromXml.fromIP)) {
+//                                Message msg = handler.obtainMessage();
+//                                msg.obj = fromXml;
+//                                msg.what = 1;
+//                                handler.sendMessage(msg);
+//                            }
+//                        }
+//                        System.out.println(new String(dp.getData()));
+//                    }
+//                } catch (Exception e) {
+//                    // TODO: handle exception
+//                    e.printStackTrace();
+//                }
+//            }
+//        }.start();
+//
+//    }
 
 
     private void initmyAvatar() {
@@ -159,19 +139,13 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.fromAvatar = myAvatar;
             chatMessage.msgType = 0;
-            chatMessage.sendTime = getDateNow();
+            chatMessage.sendTime = FileUtils.getDateNow();
             chatMessage.fromIP = localIP;
             chatMessage.content = contString;
             chatMessage.fromNick = username;
             chatMessage.type = "chatRoom";
             final String xml = chatMessage.toXml();
-            new Thread() {
-                @Override
-                public void run() {
-                    super.run();
-                    SocketUtils.sendBroadcastRoom(xml);
-                }
-            }.start();
+            SocketUtils.sendBroadcastRoom(xml);//发送群聊消息
             BuddyDao buddyDao = new BuddyDao(ChatRoomActivity.this);
             buddyDao.addRoomMsg(chatMessage);
             mDataArrays.add(chatMessage);
@@ -186,21 +160,6 @@ public class ChatRoomActivity extends AppCompatActivity implements View.OnClickL
         chatRoomMessageAdapater = new ChatRoomMessageAdapater(getApplicationContext(), mDataArrays);
         lv_chatRoom.setAdapter(chatRoomMessageAdapater);
     }
-
-    /**
-     * 获得发送时间
-     */
-    private String getDateNow() {
-        SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss");
-        SimpleDateFormat hour = new SimpleDateFormat("HH");
-        String date = hour.format(new Date());
-        int num = Integer.parseInt(date);
-        if (num >= 12) {
-            return "下午" + " " + format.format(new Date());
-        }
-        return "上午" + " " + format.format(new Date());
-    }
-
 
     private void initView() {
         textViewRoom = (TextView) findViewById(R.id.textViewRoom);

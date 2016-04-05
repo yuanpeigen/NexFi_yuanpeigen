@@ -5,7 +5,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.nexfi.yuanpeigen.bean.ChatMessage;
+import com.nexfi.yuanpeigen.nexfi.R;
+
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by gengbaolong on 2016/3/11.
@@ -261,5 +266,66 @@ public class FileUtils {
         String[] splitIps = ip.split("\\.");
         return splitIps[splitIps.length - 1];
     }
+
+
+    /**
+     * 获得发送时间
+     */
+    public static String getDateNow() {
+        SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss");
+        SimpleDateFormat hour = new SimpleDateFormat("HH");
+        String date = hour.format(new Date());
+        int num = Integer.parseInt(date);
+        if (num >= 12) {
+            return "下午" + " " + format.format(new Date());
+        }
+        return "上午" + " " + format.format(new Date());
+    }
+
+    /**
+     * 根据文件扩展名设置文件图标
+     *
+     * @param chatMessage
+     * @param extensionName
+     */
+    public static void setFileIcon(ChatMessage chatMessage, String extensionName) {
+        if (null != extensionName) {
+            if ("txt".equals(extensionName)) {
+                chatMessage.fileIcon = (R.mipmap.txt);
+            } else if (extensionName.contains("doc")) {
+                chatMessage.fileIcon = (R.mipmap.doc);
+            } else if ("xls".equals(extensionName)) {
+                //excel
+                chatMessage.fileIcon = (R.mipmap.xls);
+            } else if (("ppt").equals(extensionName)) {
+                chatMessage.fileIcon = (R.mipmap.ppt);
+            } else if ("pdf".equals(extensionName)) {
+                chatMessage.fileIcon = (R.mipmap.pdf);
+            } else if ("jpg".equals(extensionName)) {
+                chatMessage.fileIcon = (R.mipmap.jpg);
+            } else if ("jpg".equals(extensionName)) {
+                chatMessage.fileIcon = (R.mipmap.jpeg);
+            } else if ("png".equals(extensionName)) {
+                chatMessage.fileIcon = (R.mipmap.png);
+            } else if ("bmp".equals(extensionName)) {
+                chatMessage.fileIcon = (R.mipmap.bmp);
+            } else if ("gif".equals(extensionName)) {
+                chatMessage.fileIcon = (R.mipmap.gif);
+            } else if ("mp3".equals(extensionName)) {
+                //mp3
+                chatMessage.fileIcon = (R.mipmap.mp3);
+            } else if ("apk".equals(extensionName)) {
+                //apk
+                chatMessage.fileIcon = (R.mipmap.apk);
+            } else if ("zip".equals(extensionName)) {
+                chatMessage.fileIcon = (R.mipmap.zip);
+            } else if (("rar".equals(extensionName))) {
+                chatMessage.fileIcon = (R.mipmap.rar);
+            } else {//默认图标
+                chatMessage.fileIcon = (R.mipmap.default_icon);
+            }
+        }
+    }
+
 
 }
